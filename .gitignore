@@ -91,4 +91,8 @@ fabric.properties
 
 *.rdb
 
-# End of https://www.toptal.com/developers/gitignore/api/redis,pycharm+all
+### ETL ###
+
+/etl/movies_state.json
+/etl/logs/
+/etl/.env
