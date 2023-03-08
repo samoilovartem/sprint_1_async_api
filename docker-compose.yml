@@ -1,0 +1,54 @@
+version: '3.8'
+
+x-env-file: &services-env-file
+  env_file:
+    - ./.env.dev
+
+services:
+  db:
+    image: postgres:15.2-alpine
+    container_name: movies_db
+    restart: always
+    volumes:
+      - ./volumes/postgres_data:/var/lib/postgresql/data
+    <<: *services-env-file
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+  
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    container_name: movies_es
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./volumes/elastic_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  
+  redis:
+    image: redis:7.0.9
+    container_name: movies_redis
+    ports:
+      - 6379:6379
+  
+  etl:
+    container_name: movies_etl
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - elasticsearch
+    <<: *services-env-file
+  
+  fastapi:
+    container_name: movies_fastapi
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    restart: always
+    <<: *services-env-file
+    ports:
+      - 8000:8000
