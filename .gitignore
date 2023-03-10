@@ -99,3 +99,6 @@ fabric.properties
 
 ### Virtual environment and temporary requirements ###
 .venv/*
+
+# pycache
+__pycache__/
