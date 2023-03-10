@@ -99,8 +99,3 @@ fabric.properties
 
 ### Virtual environment and temporary requirements ###
 .venv/*
-etl/requirements.txt
-src/requirements.txt
-
-### Docker volumes ###
-volumes/*
