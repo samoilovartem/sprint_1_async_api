@@ -96,3 +96,6 @@ fabric.properties
 /etl/movies_state.json
 /etl/logs/
 /etl/.env
+
+### Virtual environment and temporary requirements ###
+.venv/*

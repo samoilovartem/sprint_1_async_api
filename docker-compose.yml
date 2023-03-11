@@ -1,0 +1,76 @@
+version: '3.8'
+
+x-env-file: &services-env-file
+  env_file:
+    - ./.env.dev
+
+services:
+  db:
+    image: postgres:15.2
+    container_name: movies_db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    <<: *services-env-file
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+    
+  
+  elasticsearch:
+    image: elasticsearch:7.17.9
+    container_name: movies_es
+    environment:
+      - "discovery.type=single-node"
+      - "node.name=elasticsearch"
+      - "cluster.name=docker-cluster"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    <<: *services-env-file
+    networks:
+      - backend
+    ports:
+      - "9200:9200"
+  
+  redis:
+    image: redis:7.0.9
+    container_name: movies_redis
+    networks:
+      - backend
+    ports:
+      - "6379:6379"
+  
+  etl:
+    container_name: movies_etl
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - elasticsearch
+    <<: *services-env-file
+    networks:
+      - backend
+  
+  fastapi:
+    container_name: movies_fastapi
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    restart: always
+    <<: *services-env-file
+    networks:
+      - backend
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
+  es_data:
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
