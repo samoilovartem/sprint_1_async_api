@@ -1,10 +1,12 @@
 FROM python:3.11
 
-RUN apt-get update
+RUN apt-get update --fix-missing
 
-COPY . /app
 WORKDIR /app/
-RUN python -m pip install --upgrade pip
-RUN pip install -r requirements.txt
 
-CMD ["python", "main.py"] 
+COPY requirements.txt /app/
+RUN pip install -r /app/requirements.txt --no-cache-dir
+
+COPY . /app/
+
+CMD ["python", "main.py"]

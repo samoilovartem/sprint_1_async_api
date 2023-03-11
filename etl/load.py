@@ -3,7 +3,8 @@ from elasticsearch import TransportError, ConnectionTimeout, RequestError, Elast
 from elasticsearch.helpers import bulk
 from loguru import logger
 
-from configs import loguru_config, MOVIES_INDEX, settings_config
+from configs import loguru_config, settings_config
+from indexes import ALL_INDEXES
 from schemas import MovieData
 
 logger.add(**loguru_config)
@@ -14,10 +15,9 @@ class ElasticsearchLoader:
     A class to load data into Elasticsearch.
     """
 
-    def __init__(self, es_url: str, index_name: str):
+    def __init__(self, es_url: str):
         self.connection = None
         self.es_url = es_url
-        self.index_name = index_name
 
     @on_exception(
         expo,
@@ -34,28 +34,28 @@ class ElasticsearchLoader:
         logger.info('The connection with Elasticsearch has been established')
 
     @on_exception(expo, RequestError, max_tries=settings_config.MAX_TRIES, logger=logger)
-    def create_index(self) -> None:
+    def create_index(self, index_name: str) -> None:
         """
         Creates the Elasticsearch index if it doesn't exist.
         """
 
-        if not self.connection.indices.exists(index=self.index_name):
+        if not self.connection.indices.exists(index=index_name):
             response = self.connection.indices.create(
-                index=self.index_name,
-                body=MOVIES_INDEX,
+                index=index_name,
+                body=ALL_INDEXES[index_name],
                 ignore=400
             )
-            logger.info('Created index "{}". Response from Elasticsearch: {}', self.index_name, response)
+            logger.info('Created index "{}". Response from Elasticsearch: {}', index_name, response)
 
     @on_exception(expo, SerializationError, max_tries=settings_config.MAX_TRIES, logger=logger)
-    def load_movies_data(self, data: list[MovieData]) -> None:
+    def load_movies_data(self, data: list[MovieData], index_name: str) -> None:
         """
         Loads data into Elasticsearch.
         """
 
         actions = [
             {
-                '_index': self.index_name,
+                '_index': index_name,
                 '_id': row.id,
                 '_source': row.dict()}
             for row in data

@@ -52,6 +52,9 @@ MOVIES_INDEX = {
             "imdb_rating": {
                 "type": "float"
             },
+            "type": {
+                "type": "keyword"
+            },
             "creation_date": {
                 "type": "date",
                 "format": "yyyy-MM-dd",
@@ -89,7 +92,7 @@ MOVIES_INDEX = {
                 "type": "text",
                 "analyzer": "ru_en"
             },
-            "director": {
+            "directors_names": {
                 "type": "text",
                 "analyzer": "ru_en"
             },
@@ -100,6 +103,19 @@ MOVIES_INDEX = {
             "writers_names": {
                 "type": "text",
                 "analyzer": "ru_en"
+            },
+            "directors": {
+                "type": "nested",
+                "dynamic": "strict",
+                "properties": {
+                    "id": {
+                        "type": "keyword"
+                    },
+                    "full_name": {
+                        "type": "text",
+                        "analyzer": "ru_en"
+                    },
+                },
             },
             "actors": {
                 "type": "nested",
@@ -131,7 +147,6 @@ MOVIES_INDEX = {
     }
 }
 
-
 PERSONS_INDEX = {
     **SETTINGS_BODY,
     "mappings": {
@@ -152,7 +167,7 @@ PERSONS_INDEX = {
             "roles": {
                 "type": "keyword"
             },
-            "film_ids": {
+            "movies_ids": {
                 "type": "keyword"
             },
         },
@@ -176,4 +191,10 @@ GENRES_INDEX = {
             },
         },
     },
+}
+
+ALL_INDEXES = {
+    'movies': MOVIES_INDEX,
+    'genres': GENRES_INDEX,
+    'persons': PERSONS_INDEX,
 }

@@ -8,7 +8,6 @@ services:
   db:
     image: postgres:15.2
     container_name: movies_db
-    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
     <<: *services-env-file
@@ -16,7 +15,8 @@ services:
       - backend
     ports:
       - "5432:5432"
-    
+    restart: always
+
   
   elasticsearch:
     image: elasticsearch:7.17.9
@@ -33,6 +33,7 @@ services:
       - backend
     ports:
       - "9200:9200"
+    restart: always
   
   redis:
     image: redis:7.0.9
@@ -50,6 +51,10 @@ services:
     depends_on:
       - db
       - elasticsearch
+    command: ["./wait-for-it.sh", "db:5432", "--", "./wait-for-it.sh",
+              "elasticsearch:9200", "--", "python", "main.py"]
+    volumes:
+      - ./etl:/app
     <<: *services-env-file
     networks:
       - backend
@@ -59,12 +64,12 @@ services:
     build:
       context: ./src
       dockerfile: Dockerfile
-    restart: always
     <<: *services-env-file
     networks:
       - backend
     ports:
       - "8000:8000"
+    restart: always
 
 volumes:
   postgres_data:

@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 from uuid import UUID
 
@@ -51,14 +52,34 @@ class CustomSettings(BaseSettings):
     MAX_TRIES = int = Field(5)
 
 
+class ShortPersonData(BaseModel):
+    id: UUID
+    full_name: str
+
+
+class FullPersonData(ShortPersonData):
+    roles: list[str] = Field(default_factory=list)
+    movies_ids: list[UUID] = Field(default_factory=list)
+
+
+class GenreData(BaseModel):
+    id: UUID
+    name: str
+    description: Optional[str] = None
+
+
 class MovieData(BaseModel):
     id: UUID
-    imdb_rating: Optional[float]
-    title: Optional[str]
-    description: Optional[str]
-    genre: Optional[list]
-    director: Optional[list]
-    actors: Optional[list[dict]]
-    writers: Optional[list[dict]]
-    actors_names: Optional[list[str]]
-    writers_names: Optional[list[str]]
+    imdb_rating: Optional[float] = Field(default=None, ge=0, le=10)
+    type: str
+    creation_date: Optional[date] = None
+    genres: list[GenreData]
+    title: str
+    file_path: Optional[str] = None
+    description: Optional[str] = None
+    directors_names: list[str] = []
+    actors_names: list[str] = []
+    writers_names: list[str] = []
+    directors: list[ShortPersonData] = []
+    actors: list[ShortPersonData] = []
+    writers: list[ShortPersonData] = []
