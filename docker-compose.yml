@@ -67,6 +67,8 @@ services:
     <<: *services-env-file
     networks:
       - backend
+    volumes:
+      - ./src:/app
     ports:
       - "8000:8000"
     restart: always

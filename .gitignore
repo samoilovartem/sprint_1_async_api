@@ -100,5 +100,9 @@ fabric.properties
 ### Virtual environment and temporary requirements ###
 .venv/*
 
+
+### Personal local stuff ###
+useful_commands.txt
+
 # pycache
 __pycache__/
