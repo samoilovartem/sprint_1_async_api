@@ -25,27 +25,27 @@ class FastJSONMixin(BaseModel):
         json_dumps = orjson_dumps
 
 
-# class PersonDetail(FastJSONMixin):
-#     """A Pydantic model that represents a person and their roles in a movie."""
-#
-#     full_name: Field(
-#         title='Full name',
-#         max_length=255,
-#         example='Mike Epps',
-#     )
-#     roles: Optional[list[str]] = Field(
-#         title='Roles',
-#         max_length=50,
-#         example=['Actor', 'Director'],
-#         default=[],
-#     )
-#     movies_ids: Optional[list[id]] = Field(
-#         title='Movies IDs',
-#         example=[
-#             'fb58fd7f-7afd-447f-b833-e51e45e2a778',
-#             '0e73f787-566f-4b83-816f-7805b32003aa'
-#         ],
-#     )
+class PersonDetail(FastJSONMixin):
+    """A Pydantic model that represents a person and their roles in a movie."""
+
+    full_name: str = Field(
+        title='Full name',
+        max_length=255,
+        example='Mike Epps',
+    )
+    roles: Optional[list[str]] = Field(
+        title='Roles',
+        max_length=50,
+        example=['Actor', 'Director'],
+        default=[],
+    )
+    movies_ids: Optional[list[UUID]] = Field(
+        title='Movies IDs',
+        example=[
+            'fb58fd7f-7afd-447f-b833-e51e45e2a778',
+            '0e73f787-566f-4b83-816f-7805b32003aa'
+        ],
+    )
 
 
 class MovieList(FastJSONMixin):
@@ -102,52 +102,52 @@ class MovieDetail(MovieList):
         ],
         default=[],
     )
-    actors: Optional[list[Any]] = Field(
+    actors: Optional[list[PersonDetail]] = Field(
         title='Actors',
-        # example=[
-        #     PersonDetail(
-        #         id='2834aaa1-d11d-4506-966c-0122ac4da0dc',
-        #         full_name='Mike Stoklasa',
-        #         roles=['Director', 'Actor'],
-        #         movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
-        #     ),
-        #     PersonDetail(
-        #         id='7098cdbd-424d-40fa-b7c3-0bf6c81ed283',
-        #         full_name='Mike Epps',
-        #         roles=['Actor'],
-        #         movies_ids=['0e73f787-566f-4b83-816f-7805b32003aa'],
-        #     ),
-        # ],
+        example=[
+            PersonDetail(
+                id='2834aaa1-d11d-4506-966c-0122ac4da0dc',
+                full_name='Mike Stoklasa',
+                roles=['Director', 'Actor'],
+                movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
+            ),
+            PersonDetail(
+                id='7098cdbd-424d-40fa-b7c3-0bf6c81ed283',
+                full_name='Mike Epps',
+                roles=['Actor'],
+                movies_ids=['0e73f787-566f-4b83-816f-7805b32003aa'],
+            ),
+        ],
         default=[],
     )
 
-    writers: Optional[list[Any]] = Field(
+    writers: Optional[list[PersonDetail]] = Field(
         title='Writers',
-        # example=[
-        #     PersonDetail(
-        #         id='6960e2ca-889f-41f5-b728-1e7313e54d6c',
-        #         full_name='Gene Roddenberry',
-        #         roles=['Writer'],
-        #         movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
-        #     ),
-        #     PersonDetail(
-        #         id='82b7dffe-6254-4598-b6ef-5be747193946',
-        #         full_name='Alex Kurtzman',
-        #         roles=['Writer'],
-        #         movies_ids=['0e73f787-566f-4b83-816f-7805b32003aa'],
-        #     ),
-        # ],
+        example=[
+            PersonDetail(
+                id='6960e2ca-889f-41f5-b728-1e7313e54d6c',
+                full_name='Gene Roddenberry',
+                roles=['Writer'],
+                movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
+            ),
+            PersonDetail(
+                id='82b7dffe-6254-4598-b6ef-5be747193946',
+                full_name='Alex Kurtzman',
+                roles=['Writer'],
+                movies_ids=['0e73f787-566f-4b83-816f-7805b32003aa'],
+            ),
+        ],
         default=[],
     )
-    directors: Optional[list[Any]] = Field(
+    directors: Optional[list[PersonDetail]] = Field(
         title='Directors',
-        # example=[
-        #     PersonDetail(
-        #         id='fda827f8-d261-4c23-9e9c-e42787580c4d',
-        #         full_name='Shaun Robertson',
-        #         roles=['Director'],
-        #         movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
-        #     ),
-        # ],
+        example=[
+            PersonDetail(
+                id='fda827f8-d261-4c23-9e9c-e42787580c4d',
+                full_name='Shaun Robertson',
+                roles=['Director'],
+                movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
+            ),
+        ],
         default=[],
     )
