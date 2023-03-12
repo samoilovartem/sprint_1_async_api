@@ -62,11 +62,9 @@ async def movie_details(movie_id: str,
                             detail='movie not found')
     return MovieDetail(id=movie.id,
                        imdb_rating=movie.imdb_rating,
-                       genre=movie.genre,
+                       genres=movie.genres,
                        title=movie.title,
                        description=movie.description,
-                       director=movie.director,
-                       actors_names=movie.actors_names,
-                       writers_names=movie.writers_names,
+                       directors=movie.directors,
                        actors=movie.actors,
                        writers=movie.writers)
