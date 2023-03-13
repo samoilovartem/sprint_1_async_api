@@ -23,18 +23,18 @@ async def movies_sorted(sort: str = None,
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
                                 detail='sorting not found')
         sort_type = 'desc' if sort.startswith('-') else 'asc'
-    movie_list = await movie_service.get_movie_sorted(
+    movies_list = await movie_service.get_movies_sorted(
         sort_field=sort_field,
         sort_type=sort_type,
         filter_genre=filter_genre,
         page_number=page_number,
         page_size=page_size)
-    if not movie_list:
+    if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
                             detail='movie not found')
     return [MovieList(id=movie.id,
                       title=movie.title,
-                      imdb_rating=movie.imdb_rating) for movie in movie_list]
+                      imdb_rating=movie.imdb_rating) for movie in movies_list]
 
 
 @router.get('/search/{movie_search_string}', response_model=list[MovieList],
@@ -42,13 +42,13 @@ async def movies_sorted(sort: str = None,
 async def movies_search(movie_search_string: str,
                         movie_service: MovieService = Depends(
                             get_movie_service)) -> list[MovieList]:
-    movie_list = await movie_service.get_movie_by_search(movie_search_string)
-    if not movie_list:
+    movies_list = await movie_service.get_movies_by_search(movie_search_string)
+    if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
                             detail='movie not found')
     return [MovieList(id=movie.id,
                       title=movie.title,
-                      imdb_rating=movie.imdb_rating) for movie in movie_list]
+                      imdb_rating=movie.imdb_rating) for movie in movies_list]
 
 
 @router.get('/{movie_id}', response_model=MovieDetail,
@@ -68,3 +68,31 @@ async def movie_details(movie_id: str,
                        directors=movie.directors,
                        actors=movie.actors,
                        writers=movie.writers)
+
+
+@router.get('/{movie_id}/similar', response_model=list[MovieList],
+            response_model_exclude_unset=True)
+async def similar_movies(movie_id: str,
+                         movie_service: MovieService = Depends(
+                             get_movie_service)) -> list[MovieList]:
+    movies_list = await movie_service.get_similar_movies(movie_id)
+    if not movies_list:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
+                            detail='similar movies not found')
+    return [MovieList(id=movie.id,
+                      title=movie.title,
+                      imdb_rating=movie.imdb_rating) for movie in movies_list]
+
+
+@router.get('/genres/{genre_id}', response_model=list[MovieList],
+            response_model_exclude_unset=True)
+async def popular_in_genre(genre_id: str,
+                           movie_service: MovieService = Depends(
+                               get_movie_service)) -> list[MovieList]:
+    movies_list = await movie_service.get_popular_genre_movies(genre_id)
+    if not movies_list:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
+                            detail='similar movies not found')
+    return [MovieList(id=movie.id,
+                      title=movie.title,
+                      imdb_rating=movie.imdb_rating) for movie in movies_list]
