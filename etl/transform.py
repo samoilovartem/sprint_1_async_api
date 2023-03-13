@@ -42,51 +42,51 @@ class DataTransformer:
         if index_name == 'movies':
             for movie in movies_data:
                 persons = self.get_persons_by_role(
-                    persons=movie['all_persons'],
+                    persons=movie.get('all_persons'),
                     roles=['director', 'actor', 'writer']
                 )
                 genres = [
                     GenreData(
-                        id=genre['id'],
-                        name=genre['name'],
-                        description=genre['description'],
+                        id=genre.get('id'),
+                        name=genre.get('name'),
+                        description=genre.get('description'),
                     )
-                    for genre in movie['all_genres']
+                    for genre in movie.get('all_genres')
                 ]
                 movie_data = MovieData(
-                    id=movie['id'],
-                    imdb_rating=movie['rating'],
-                    type=movie['type'],
-                    creation_date=movie["creation_date"],
+                    id=movie.get('id'),
+                    imdb_rating=movie.get('rating'),
+                    type=movie.get('type'),
+                    creation_date=movie.get("creation_date"),
                     genres=genres,
-                    title=movie['title'],
-                    file_path=movie["file_path"],
-                    description=movie['description'],
-                    directors_names=persons['director'][1],
-                    actors_names=persons['actor'][1],
-                    writers_names=persons['writer'][1],
-                    directors=persons['director'][0],
-                    actors=persons['actor'][0],
-                    writers=persons['writer'][0],
+                    title=movie.get('title'),
+                    file_path=movie.get("file_path"),
+                    description=movie.get('description'),
+                    directors_names=persons.get('director')[1],
+                    actors_names=persons.get('actor')[1],
+                    writers_names=persons.get('writer')[1],
+                    directors=persons.get('director')[0],
+                    actors=persons.get('actor')[0],
+                    writers=persons.get('writer')[0],
                 )
                 es_data.append(movie_data)
             return es_data
         elif index_name == 'genres':
             for genre in movies_data:
                 genre_data = GenreData(
-                    id=genre['id'],
-                    name=genre['name'],
-                    description=genre['description'],
+                    id=genre.get('id'),
+                    name=genre.get('name'),
+                    description=genre.get('description'),
                 )
                 es_data.append(genre_data)
             return es_data
         else:
             for person in movies_data:
                 person_data = FullPersonData(
-                    id=person['id'],
-                    full_name=person['full_name'],
-                    roles=person['roles'],
-                    movies_ids=[movie['id'] for movie in person['all_movies']],
+                    id=person.get('id'),
+                    full_name=person.get('full_name'),
+                    roles=person.get('roles'),
+                    movies_ids=[movie.get('id') for movie in person.get('all_movies')],
                 )
                 es_data.append(person_data)
             return es_data

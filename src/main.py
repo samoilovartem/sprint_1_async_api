@@ -1,27 +1,41 @@
+import logging
 import uvicorn
+from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from api.v1 import movies
 from core import config
-from core.logger import LOGGING
+from core.custom_logger import CustomLogger
+from db import elastic
+
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    # Конфигурируем название проекта. Оно будет отображаться в документации
     title=config.PROJECT_NAME,
-    # Адрес документации в красивом интерфейсе
     docs_url='/api/openapi',
-    # Адрес документации в формате OpenAPI
     openapi_url='/api/openapi.json',
-    # Можно сразу сделать небольшую оптимизацию сервиса
-    # и заменить стандартный JSON-сериализатор на более шуструю версию, написанную на Rust
     default_response_class=ORJSONResponse,
+    logger=CustomLogger.make_logger()
 )
 
+
+@app.on_event('startup')
+async def startup():
+    elastic.es = AsyncElasticsearch(
+        hosts=[f'{config.ES_HOST}:{config.ES_PORT}'])
+
+
+@app.on_event('shutdown')
+async def shutdown():
+    await elastic.es.close()
+
+
+app.include_router(movies.router, prefix='/api/v1/movies')
+
+
 if __name__ == '__main__':
-    # Приложение может запускаться командой
-    # `uvicorn main:app --host 0.0.0.0 --port 8000`
-    # но чтобы не терять возможность использовать дебагер,
-    # запустим uvicorn сервер через python
     uvicorn.run(
         'main:app',
         host='0.0.0.0',
