@@ -1,4 +1,4 @@
-from elasticsearch import AsyncElasticsearch
+from elasticsearch import AsyncElasticsearch, NotFoundError
 from pydantic import BaseModel
 
 
@@ -8,7 +8,10 @@ class MixinService:
 
     async def _get_by_id(
             self, id: str, model: BaseModel, es_index: str) -> BaseModel:
-        doc = await self.elastic.get(es_index, id)
+        try:
+            doc = await self.elastic.get(es_index, id)
+        except NotFoundError:
+            return None
         return model(**doc['_source'])
 
     async def _get_by_search(
