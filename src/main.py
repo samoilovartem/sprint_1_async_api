@@ -1,3 +1,4 @@
+import logging
 import uvicorn
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
@@ -5,20 +6,25 @@ from fastapi.responses import ORJSONResponse
 
 from api.v1 import movies
 from core import config
+from core.custom_logger import CustomLogger
 from db import elastic
+
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title=config.PROJECT_NAME,
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
+    logger=CustomLogger.make_logger()
 )
 
 
 @app.on_event('startup')
 async def startup():
     elastic.es = AsyncElasticsearch(
-        hosts=[f'{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
+        hosts=[f'{config.ES_HOST}:{config.ES_PORT}'])
 
 
 @app.on_event('shutdown')

@@ -106,3 +106,4 @@ useful_commands.txt
 
 # pycache
 __pycache__/
+src/logs/fastapi.log
