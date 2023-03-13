@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
@@ -12,7 +13,7 @@ class MovieService(MixinService):
     es_index = 'movies'
     model = MovieDetail
 
-    async def get_movie_by_id(self, movie_id: str) -> Optional[MovieDetail]:
+    async def get_movie_by_id(self, movie_id: UUID) -> Optional[MovieDetail]:
         return await self._get_by_id(movie_id, self.model, self.es_index)
 
     async def get_movies_by_search(
@@ -21,7 +22,7 @@ class MovieService(MixinService):
                                          self.es_index, self.model)
 
     async def get_movies_sorted(
-            self, sort_field: str, sort_type: str, filter_genre: str,
+            self, sort_field: str, sort_type: str, filter_genre: UUID,
             page_number: int, page_size: int) -> Optional[list[MovieDetail]]:
         query = {"sort": {sort_field: sort_type}}
         if filter_genre:
@@ -37,7 +38,7 @@ class MovieService(MixinService):
         return movies_list
 
     async def get_similar_movies(
-            self, movie_id: str) -> Optional[list[MovieDetail]]:
+            self, movie_id: UUID) -> Optional[list[MovieDetail]]:
         movie = await self.get_movie_by_id(movie_id)
         if not movie or not movie.genres:
             return None
@@ -46,14 +47,14 @@ class MovieService(MixinService):
             similar_movies = await self.get_movies_sorted(
                 sort_field='imdb_rating',
                 sort_type='desc',
-                filter_genre=genres.id,
+                filter_genre=genre.id,
                 page_number=0,
                 page_size=10)
             if similar_movies:
                 result.extend(similar_movies)
         return result
 
-    async def get_popular_genre_movies(self, genre_id: str, ) -> list[MovieDetail]:
+    async def get_popular_genre_movies(self, genre_id: UUID) -> list[MovieDetail]:
         movies_list = await self.get_movies_sorted(sort_field='imdb_rating',
                                                    sort_type='desc',
                                                    filter_genre=genre_id,

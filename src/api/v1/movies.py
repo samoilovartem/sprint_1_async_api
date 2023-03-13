@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -10,7 +11,7 @@ router = APIRouter()
 
 @router.get('/', response_model=list[MovieDetail], response_model_exclude_unset=True)
 async def movies_sorted(sort: str = None,
-                        filter_genre: str = None,
+                        filter_genre: UUID = None,
                         page_number: int = 0,
                         page_size: int = 20,
                         movie_service: MovieService = Depends(get_movie_service)):
@@ -53,7 +54,7 @@ async def movies_search(movie_search_string: str,
 
 @router.get('/{movie_id}', response_model=MovieDetail,
             response_model_exclude_unset=True)
-async def movie_details(movie_id: str,
+async def movie_details(movie_id: UUID,
                         movie_service: MovieService = Depends(
                             get_movie_service)) -> MovieDetail:
     movie = await movie_service.get_movie_by_id(movie_id)
@@ -72,7 +73,7 @@ async def movie_details(movie_id: str,
 
 @router.get('/{movie_id}/similar', response_model=list[MovieList],
             response_model_exclude_unset=True)
-async def similar_movies(movie_id: str,
+async def similar_movies(movie_id: UUID,
                          movie_service: MovieService = Depends(
                              get_movie_service)) -> list[MovieList]:
     movies_list = await movie_service.get_similar_movies(movie_id)
@@ -86,13 +87,13 @@ async def similar_movies(movie_id: str,
 
 @router.get('/genres/{genre_id}', response_model=list[MovieList],
             response_model_exclude_unset=True)
-async def popular_in_genre(genre_id: str,
+async def popular_in_genre(genre_id: UUID,
                            movie_service: MovieService = Depends(
                                get_movie_service)) -> list[MovieList]:
     movies_list = await movie_service.get_popular_genre_movies(genre_id)
     if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail='similar movies not found')
+                            detail='no movies of this genre were found')
     return [MovieList(id=movie.id,
                       title=movie.title,
                       imdb_rating=movie.imdb_rating) for movie in movies_list]
