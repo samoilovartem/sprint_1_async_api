@@ -27,7 +27,23 @@ class MovieService(MixinService):
         query = {"sort": {sort_field: sort_type}}
         if filter_genre:
             query = query | {
-                "query": {"match": {"genres.id": {"query": filter_genre}}}}
+                "query": {
+                    "nested":
+                        {
+                            "path": "genres",
+                            "query":
+                                {
+                                    "bool":
+                                        {
+                                            "must":
+                                                [
+                                                    {"match": {"genres.id": "120a21cf-9097-479e-904a-13dd7198c1dd"}}
+                                                ]
+                                        }
+                                }
+                        }
+                }
+            }
         movies_list = await self._get_list(page_number,
                                            page_size,
                                            self.es_index,
