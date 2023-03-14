@@ -27,7 +27,7 @@ async def get_persons_list(page_number: int = 0,
                          movie_ids=person.movies_ids) for person in persons_list]
 
 
-@router.get('/{person_id}', response_model=list[PersonDetail],
+@router.get('/{person_id}', response_model=PersonDetail,
             response_model_exclude_unset=True,
             description="Get a detailed person description")
 async def get_person_detail(person_id: UUID,
