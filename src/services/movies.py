@@ -22,28 +22,13 @@ class MovieService(MixinService):
                                          self.es_index, self.model)
 
     async def get_movies_sorted(
-            self, sort_field: str, sort_type: str, filter_genre: UUID,
+            self, sort_field: str, sort_type: str, genre_id: UUID,
             page_number: int, page_size: int) -> Optional[list[MovieDetail]]:
         query = {"sort": {sort_field: sort_type}}
-        if filter_genre:
-            query = query | {
-                "query": {
-                    "nested":
-                        {
-                            "path": "genres",
-                            "query":
-                                {
-                                    "bool":
-                                        {
-                                            "must":
-                                                [
-                                                    {"match": {"genres.id": "120a21cf-9097-479e-904a-13dd7198c1dd"}}
-                                                ]
-                                        }
-                                }
-                        }
-                }
-            }
+        genre_query = {"query": {"nested": {"path": "genres", "query": {
+            "bool": {"must": [{"match": {"genres.id": genre_id}}]}}}}}
+        if genre_id:
+            query = query | genre_query
         movies_list = await self._get_list(page_number,
                                            page_size,
                                            self.es_index,
@@ -63,7 +48,7 @@ class MovieService(MixinService):
             similar_movies = await self.get_movies_sorted(
                 sort_field='imdb_rating',
                 sort_type='desc',
-                filter_genre=genre.id,
+                genre_id=genre.id,
                 page_number=0,
                 page_size=10)
             if similar_movies:
@@ -73,7 +58,7 @@ class MovieService(MixinService):
     async def get_popular_genre_movies(self, genre_id: UUID) -> list[MovieDetail]:
         movies_list = await self.get_movies_sorted(sort_field='imdb_rating',
                                                    sort_type='desc',
-                                                   filter_genre=genre_id,
+                                                   genre_id=genre_id,
                                                    page_number=0,
                                                    page_size=30)
         return movies_list
