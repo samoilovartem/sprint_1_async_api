@@ -43,7 +43,7 @@ class PersonDetail(FastJSONMixin):
         title='Movies IDs',
         example=[
             'fb58fd7f-7afd-447f-b833-e51e45e2a778',
-            '0e73f787-566f-4b83-816f-7805b32003aa'
+            '0e73f787-566f-4b83-816f-7805b32003aa',
         ],
     )
 
@@ -54,7 +54,8 @@ class MovieList(FastJSONMixin):
     title: str = Field(
         title='Movie title',
         max_length=255,
-        example='Star Wars: Episode IV - A New Hope')
+        example='Star Wars: Episode IV - A New Hope',
+    )
     imdb_rating: Optional[float] = Field(
         title='Movie IMDb rating',
         ge=0,
@@ -75,7 +76,7 @@ class GenreDetail(FastJSONMixin):
     description: Optional[str] = Field(
         title='Genre description',
         example='Action genre is a media category that features intense physical action and combat, often with a '
-                'protagonist facing high-stakes conflicts against enemies.',
+        'protagonist facing high-stakes conflicts against enemies.',
         default=None,
     )
 
@@ -94,11 +95,13 @@ class MovieDetail(MovieList):
             GenreDetail(
                 id='120a21cf-9097-479e-904a-13dd7198c1dd',
                 name='Adventure',
-                description='Adventure genre is a media category that features protagonists who embark on a journey'),
+                description='Adventure genre is a media category that features protagonists who embark on a journey',
+            ),
             GenreDetail(
                 id='0e73f787-566f-4b83-816f-7805b32003aa',
                 name='Science fiction',
-                description='Science fiction genre is a media category that features futuristic settings'),
+                description='Science fiction genre is a media category that features futuristic settings',
+            ),
         ],
         default=[],
     )

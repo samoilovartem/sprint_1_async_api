@@ -17,7 +17,8 @@ class GenreService(MixinService):
         return await self._get_by_id(genre_id, self.model, self.es_index)
 
     async def get_list(
-            self, page_number: int, page_size: int) -> Optional[list[GenreDetail]]:
+        self, page_number: int, page_size: int
+    ) -> Optional[list[GenreDetail]]:
         return await self._get_list(page_number, page_size, self.es_index, self.model)
 
 

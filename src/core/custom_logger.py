@@ -1,6 +1,7 @@
 import logging
 import sys
 from pathlib import Path
+
 from loguru import logger
 
 from core.config import LOGLEVEL
@@ -28,14 +29,10 @@ class InterceptHandler(logging.Handler):
             depth += 1
 
         log = logger.bind(request_id='app')
-        log.opt(
-            depth=depth,
-            exception=record.exc_info
-        ).log(level, record.getMessage())
+        log.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
 class CustomLogger:
-
     @classmethod
     def make_logger(cls):
         logger = cls.customize_logging(
@@ -44,26 +41,18 @@ class CustomLogger:
             retention='1 months',
             rotation='20 days',
             format='<level>{level: <8}</level> <green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
-                   'request id: {extra[request_id]} - <cyan>{name}</cyan>:<cyan>{function}</cyan> '
-                   '- <level>{message}</level>'
+            'request id: {extra[request_id]} - <cyan>{name}</cyan>:<cyan>{function}</cyan> '
+            '- <level>{message}</level>',
         )
         return logger
 
     @classmethod
-    def customize_logging(cls,
-                          filepath: Path,
-                          level: str,
-                          rotation: str,
-                          retention: str,
-                          format: str
-                          ):
+    def customize_logging(
+        cls, filepath: Path, level: str, rotation: str, retention: str, format: str
+    ):
         logger.remove()
         logger.add(
-            sys.stdout,
-            enqueue=True,
-            backtrace=True,
-            level=level.upper(),
-            format=format
+            sys.stdout, enqueue=True, backtrace=True, level=level.upper(), format=format
         )
         logger.add(
             str(filepath),
@@ -72,14 +61,11 @@ class CustomLogger:
             enqueue=True,
             backtrace=True,
             level=level.upper(),
-            format=format
+            format=format,
         )
         logging.basicConfig(handlers=[InterceptHandler()], level=0)
         logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
-        for _log in ['uvicorn',
-                     'uvicorn.error',
-                     'fastapi'
-                     ]:
+        for _log in ['uvicorn', 'uvicorn.error', 'fastapi']:
             _logger = logging.getLogger(_log)
             _logger.handlers = [InterceptHandler()]
 

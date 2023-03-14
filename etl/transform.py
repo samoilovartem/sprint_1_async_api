@@ -1,11 +1,10 @@
 from typing import Union
 
-from backoff import on_exception, expo
+from backoff import expo, on_exception
+from configs import loguru_config, settings_config
 from loguru import logger
 from pydantic import ValidationError
-
-from configs import loguru_config, settings_config
-from schemas import MovieData, GenreData, FullPersonData
+from schemas import FullPersonData, GenreData, MovieData
 
 logger.add(**loguru_config)
 
@@ -14,36 +13,35 @@ class DataTransformer:
     """A class to validate and transform postgres data with pydantic model."""
 
     def get_persons_by_role(
-            self,
-            persons: list[dict],
-            roles: list[str]
+        self, persons: list[dict], roles: list[str]
     ) -> dict[str, tuple[list[dict], list[str]]]:
         persons_data_by_role = {}
         for role in roles:
             persons_with_role = [
-                {
-                    'id': person.get('id'),
-                    'full_name': person.get('full_name')
-                }
+                {'id': person.get('id'), 'full_name': person.get('full_name')}
                 for person in persons
                 if person.get('role') == role
             ]
-            names_of_persons_with_role = [person.get('full_name') for person in persons_with_role]
+            names_of_persons_with_role = [
+                person.get('full_name') for person in persons_with_role
+            ]
             persons_data_by_role[role] = (persons_with_role, names_of_persons_with_role)
         return persons_data_by_role
 
-    @on_exception(expo, ValidationError, max_tries=settings_config.MAX_TRIES, logger=logger)
+    @on_exception(
+        expo, ValidationError, max_tries=settings_config.MAX_TRIES, logger=logger
+    )
     def transform_movies_data(
-            self,
-            movies_data: list[dict],
-            index_name: str,
+        self,
+        movies_data: list[dict],
+        index_name: str,
     ) -> list[Union[MovieData, GenreData, FullPersonData]]:
         es_data = []
         if index_name == 'movies':
             for movie in movies_data:
                 persons = self.get_persons_by_role(
                     persons=movie.get('all_persons'),
-                    roles=['director', 'actor', 'writer']
+                    roles=['director', 'actor', 'writer'],
                 )
                 genres = [
                     GenreData(

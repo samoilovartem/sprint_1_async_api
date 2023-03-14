@@ -2,9 +2,8 @@ import abc
 import json
 from typing import Any, Optional
 
-from loguru import logger
-
 from configs import loguru_config
+from loguru import logger
 
 logger.add(**loguru_config)
 

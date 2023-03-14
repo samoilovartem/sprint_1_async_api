@@ -1,15 +1,14 @@
 import time
 from datetime import datetime, timezone
 
-from loguru import logger
-
-from configs import loguru_config, pg_config, es_config, settings_config
+from configs import es_config, loguru_config, pg_config, settings_config
 from indexes import ALL_INDEXES
 from load import ElasticsearchLoader
-from sql_queries import ALL_SQL_QUERIES
+from loguru import logger
 from psql_extractor import PostgresExtractor
-from transform import DataTransformer
+from sql_queries import ALL_SQL_QUERIES
 from state import JsonFileStorage, State
+from transform import DataTransformer
 
 logger.add(**loguru_config)
 
@@ -35,11 +34,17 @@ class ETL:
         count = 0
         try:
             for movies_data in self.psql.get_movies_data(last_state, index_name):
-                self.state.set_state(f'{index_name}_updated_at', datetime.now(timezone.utc).isoformat())
-                es_movies = self.transform.transform_movies_data(movies_data, index_name)
+                self.state.set_state(
+                    f'{index_name}_updated_at', datetime.now(timezone.utc).isoformat()
+                )
+                es_movies = self.transform.transform_movies_data(
+                    movies_data, index_name
+                )
                 self.es.load_movies_data(es_movies, index_name),
                 count += len(es_movies)
-            logger.info('Successfully transferred {} documents to Elasticsearch.', count)
+            logger.info(
+                'Successfully transferred {} documents to Elasticsearch.', count
+            )
         except Exception as e:
             logger.error('An error occurred while transferring data. Error: {}.', e)
             raise

@@ -1,6 +1,5 @@
 from dotenv import find_dotenv, load_dotenv
-
-from schemas import PostgresConfig, ElasticsearchConfig, CustomSettings
+from schemas import CustomSettings, ElasticsearchConfig, PostgresConfig
 
 load_dotenv(find_dotenv())
 
