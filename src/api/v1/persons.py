@@ -10,16 +10,17 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[PersonDetail],
-            response_model_exclude_unset=True)
-async def get_list(page_number: int = 0,
-                   page_size: int = 20,
-                   person_service: PersonService = Depends(
-                       get_service)) -> list[PersonDetail]:
+            response_model_exclude_unset=True,
+            description="Get a list of all persons")
+async def get_persons_list(page_number: int = 0,
+                           page_size: int = 20,
+                           person_service: PersonService = Depends(
+                               get_service)) -> list[PersonDetail]:
     persons_list = await person_service.get_list(page_number=page_number,
                                                  page_size=page_size)
     if not persons_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail='persons not found')
+                            detail='Persons not found')
     return [PersonDetail(id=person.id,
                          full_name=person.full_name,
                          roles=person.roles,
@@ -27,14 +28,15 @@ async def get_list(page_number: int = 0,
 
 
 @router.get('/{person_id}', response_model=list[PersonDetail],
-            response_model_exclude_unset=True)
+            response_model_exclude_unset=True,
+            description="Get a detailed person description")
 async def get_person_detail(person_id: UUID,
                             person_service: PersonService = Depends(
                                 get_service)) -> PersonDetail:
     person = await person_service.get_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail='person not found')
+                            detail='Person not found')
     return PersonDetail(id=person.id,
                         full_name=person.full_name,
                         roles=person.roles,
@@ -49,7 +51,7 @@ async def get_persons_by_search(person_search_string: str,
     persons_list = await person_service.get_by_search(person_search_string)
     if not persons_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail='persons not found')
+                            detail='Persons not found')
     return [PersonDetail(id=person.id,
                          full_name=person.full_name,
                          roles=person.roles,

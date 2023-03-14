@@ -10,7 +10,8 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[GenreDetail],
-            response_model_exclude_unset=True)
+            response_model_exclude_unset=True,
+            description="Get a list of all genres with pagination")
 async def get_genres_list(page_number: int = 0,
                           page_size: int = 20,
                           genre_service: GenreService = Depends(
@@ -19,21 +20,22 @@ async def get_genres_list(page_number: int = 0,
                                                page_size=page_size)
     if not genres_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail='persons not found')
+                            detail='Genres not found')
     return [GenreDetail(id=genre.id,
                         name=genre.name,
                         description=genre.description) for genre in genres_list]
 
 
 @router.get('/{genre_id}', response_model=GenreDetail,
-            response_model_exclude_unset=True)
-async def genre_detail(genre_id: UUID,
-                       genre_service: GenreService = Depends(
-                           get_service)) -> GenreDetail:
+            response_model_exclude_unset=True,
+            description="Get a detailed genre description")
+async def get_genre_detail(genre_id: UUID,
+                           genre_service: GenreService = Depends(
+                               get_service)) -> GenreDetail:
     genre = await genre_service.get_by_id(genre_id)
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail='person not found')
+                            detail='Genre not found')
     return GenreDetail(id=genre.id,
                        name=genre.name,
                        description=genre.description)

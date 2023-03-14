@@ -11,7 +11,7 @@ class MixinService:
     async def _get_by_id(
             self, id: UUID, model: BaseModel, es_index: str) -> BaseModel:
         try:
-            doc = await self.elastic.get(es_index, id)
+            doc = await self.elastic.get(index=es_index, id=id)
         except NotFoundError:
             return None
         return model(**doc['_source'])
