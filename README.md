@@ -19,10 +19,7 @@
 
 ### Документация к API
 
-0. Swagger: 
-
-    http://localhost:8000/api/openapi
-
+0. Swagger: http://localhost:8000/api/openapi
 1. Показать популярные фильмы: http://localhost:8000/api/v1/movies?sort=-imdb_rating&page_number=0&page_size=20
 2. Поиск по фильмам: http://localhost:8000/api/v1/movies/search?query=star%20wars&page_number=0&page_size=20
 3. Подробная информация о фильме: http://localhost:8000/api/v1/movies/c35dc09c-8ace-46be-8941-7e50b768ec33
