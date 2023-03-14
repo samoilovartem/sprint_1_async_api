@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from models.schemas import PersonDetail, MovieList
+from models.schemas import PersonDetail
 from services.persons import PersonService, get_service
 
 router = APIRouter()
@@ -24,7 +24,7 @@ async def get_persons_list(page_number: int = 0,
     return [PersonDetail(id=person.id,
                          full_name=person.full_name,
                          roles=person.roles,
-                         movie_ids=person.movies_ids) for person in persons_list]
+                         movies_ids=person.movies_ids) for person in persons_list]
 
 
 @router.get('/search', response_model=list[PersonDetail],
@@ -41,7 +41,7 @@ async def get_persons_by_search(query: str,
     return [PersonDetail(id=person.id,
                          full_name=person.full_name,
                          roles=person.roles,
-                         movie_ids=person.movies_ids) for person in persons_list]
+                         movies_ids=person.movies_ids) for person in persons_list]
 
 
 @router.get('/{person_id}', response_model=PersonDetail,
@@ -57,4 +57,4 @@ async def get_person_detail(person_id: UUID,
     return PersonDetail(id=person.id,
                         full_name=person.full_name,
                         roles=person.roles,
-                        movie_ids=person.movies_ids)
+                        movies_ids=person.movies_ids)
