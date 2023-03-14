@@ -13,15 +13,15 @@ class MovieService(MixinService):
     es_index = 'movies'
     model = MovieDetail
 
-    async def get_movie_by_id(self, movie_id: UUID) -> Optional[MovieDetail]:
+    async def get_by_id(self, movie_id: UUID) -> Optional[MovieDetail]:
         return await self._get_by_id(movie_id, self.model, self.es_index)
 
-    async def get_movies_by_search(
+    async def get_by_search(
             self, search_string: str) -> Optional[list[MovieDetail]]:
         return await self._get_by_search(search_string, 'title',
                                          self.es_index, self.model)
 
-    async def get_movies_sorted(
+    async def get_sorted(
             self, sort_field: str, sort_type: str, genre_id: UUID,
             page_number: int, page_size: int) -> Optional[list[MovieDetail]]:
         query = {"sort": {sort_field: sort_type}}
@@ -38,14 +38,14 @@ class MovieService(MixinService):
             return None
         return movies_list
 
-    async def get_similar_movies(
+    async def get_similar(
             self, movie_id: UUID) -> Optional[list[MovieDetail]]:
-        movie = await self.get_movie_by_id(movie_id)
+        movie = await self.get_by_id(movie_id)
         if not movie or not movie.genres:
             return None
         result = []
         for genre in movie.genres:
-            similar_movies = await self.get_movies_sorted(
+            similar_movies = await self.get_sorted(
                 sort_field='imdb_rating',
                 sort_type='desc',
                 genre_id=genre.id,
@@ -55,15 +55,14 @@ class MovieService(MixinService):
                 result.extend(similar_movies)
         return result
 
-    async def get_popular_genre_movies(self, genre_id: UUID) -> list[MovieDetail]:
-        movies_list = await self.get_movies_sorted(sort_field='imdb_rating',
-                                                   sort_type='desc',
-                                                   genre_id=genre_id,
-                                                   page_number=0,
-                                                   page_size=30)
+    async def get_popular_genre(self, genre_id: UUID) -> list[MovieDetail]:
+        movies_list = await self.get_sorted(sort_field='imdb_rating',
+                                            sort_type='desc',
+                                            genre_id=genre_id,
+                                            page_number=0,
+                                            page_size=30)
         return movies_list
 
 
-def get_movie_service(
-        elastic: AsyncElasticsearch = Depends(get_elastic)) -> MovieService:
+def get_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> MovieService:
     return MovieService(elastic)
