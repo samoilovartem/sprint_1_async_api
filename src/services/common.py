@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from pydantic import BaseModel
 
@@ -7,26 +9,23 @@ class MixinService:
         self.elastic = elastic
 
     async def _get_by_id(
-            self, id: str, model: BaseModel, es_index: str) -> BaseModel:
+            self, id: UUID, model: BaseModel, es_index: str) -> BaseModel:
         try:
-            doc = await self.elastic.get(es_index, id)
+            doc = await self.elastic.get(index=es_index, id=id)
         except NotFoundError:
             return None
         return model(**doc['_source'])
 
     async def _get_by_search(
             self, search_string: str, search_field: str,
+            page_number: int, page_size: int,
             es_index: str, model: BaseModel) -> list[BaseModel]:
+        body = {"from": page_number * page_size, "size": page_size}
+        query = {"query": {"match": {search_field: {"query": search_string, "fuzziness": "auto"}}}}
         doc = await self.elastic.search(
             index=es_index,
-            body={"query": {
-                "match": {
-                    search_field: {
-                        "query": search_string,
-                        "fuzziness": "auto"
-                    }
-                }
-            }})
+            body=body | query
+        )
         return [model(**d['_source']) for d in doc['hits']['hits']]
 
     async def _get_list(
