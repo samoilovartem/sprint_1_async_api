@@ -9,7 +9,7 @@ from services.genres import GenreService, get_service
 router = APIRouter()
 
 
-@router.get('/', response_model=list[GenreDetail],
+@router.get('', response_model=list[GenreDetail],
             response_model_exclude_unset=True,
             description="Get a list of all genres with pagination")
 async def get_genres_list(page_number: int = 0,

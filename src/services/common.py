@@ -18,17 +18,14 @@ class MixinService:
 
     async def _get_by_search(
             self, search_string: str, search_field: str,
+            page_number: int, page_size: int,
             es_index: str, model: BaseModel) -> list[BaseModel]:
+        body = {"from": page_number * page_size, "size": page_size}
+        query = {"query": {"match": {search_field: {"query": search_string, "fuzziness": "auto"}}}}
         doc = await self.elastic.search(
             index=es_index,
-            body={"query": {
-                "match": {
-                    search_field: {
-                        "query": search_string,
-                        "fuzziness": "auto"
-                    }
-                }
-            }})
+            body=body | query
+        )
         return [model(**d['_source']) for d in doc['hits']['hits']]
 
     async def _get_list(

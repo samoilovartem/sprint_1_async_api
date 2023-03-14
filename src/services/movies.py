@@ -17,8 +17,9 @@ class MovieService(MixinService):
         return await self._get_by_id(movie_id, self.model, self.es_index)
 
     async def get_by_search(
-            self, search_string: str) -> Optional[list[MovieDetail]]:
+            self, search_string: str, page_number: int, page_size:int) -> Optional[list[MovieDetail]]:
         return await self._get_by_search(search_string, 'title',
+                                         page_number, page_size,
                                          self.es_index, self.model)
 
     async def get_sorted(

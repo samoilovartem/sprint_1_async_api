@@ -21,8 +21,10 @@ class PersonService(MixinService):
         return await self._get_list(page_number, page_size, self.es_index, self.model)
 
     async def get_by_search(
-            self, search_string: str) -> Optional[list[PersonDetail]]:
-        return await self._get_by_search(search_string, 'full_name', self.es_index, self.model)
+            self, search_string: str, page_number: int, page_size: int) -> Optional[list[PersonDetail]]:
+        return await self._get_by_search(search_string, 'full_name',
+                                         page_number, page_size,
+                                         self.es_index, self.model)
 
 
 def get_service(elastic: AsyncElasticsearch = Depends(get_elastic)) -> PersonService:

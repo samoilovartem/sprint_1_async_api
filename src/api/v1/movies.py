@@ -9,7 +9,7 @@ from services.movies import MovieService, get_service
 router = APIRouter()
 
 
-@router.get('/', response_model=list[MovieDetail],
+@router.get('', response_model=list[MovieDetail],
             response_model_exclude_unset=True,
             description="Get a list of all movies with "
                         "optional filtering by genre")
@@ -41,13 +41,15 @@ async def get_movies_list(sort: str = None,
                       imdb_rating=movie.imdb_rating) for movie in movies_list]
 
 
-@router.get('/search/{movie_search_string}', response_model=list[MovieList],
+@router.get('/search', response_model=list[MovieList],
             response_model_exclude_unset=True,
             description="Search movies by title")
-async def get_movies_by_search(movie_search_string: str,
+async def get_movies_by_search(query: str,
+                               page_number: int = 0,
+                               page_size: int = 20,
                                movie_service: MovieService = Depends(
                                    get_service)) -> list[MovieList]:
-    movies_list = await movie_service.get_by_search(movie_search_string)
+    movies_list = await movie_service.get_by_search(query, page_number, page_size)
     if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
                             detail='Movie not found')
