@@ -48,8 +48,9 @@ class MixinService:
         cache_timout: int,
         model: BaseModel,
     ) -> list[BaseModel]:
+        key = f'{es_index}:{search_string}:{search_field}:{page_number}:{page_size}'
         data = await self._get_from_cache(
-            key=f'{es_index}:{search_string}:{search_field}',
+            key=key,
             model=model,
         )
         if not data:
@@ -57,7 +58,7 @@ class MixinService:
                 search_string, search_field, page_number, page_size, es_index, model
             )
             await self._put_into_cache(
-                key=f'{es_index}:{search_string}:{search_field}',
+                key=key,
                 data_list=data_list,
                 cache_timout=cache_timout,
             )
@@ -89,15 +90,16 @@ class MixinService:
         es_index: str,
         model: BaseModel,
     ) -> list[BaseModel] | None:
+        key = f'{es_index}:{page_number}:{page_size}'
         data_list = await self._get_from_cache(
-            key=f'{es_index}:{page_number}:{page_size}', model=model
+            key=key, model=model
         )
         if not data_list:
             data_list = await self._get_list_with_elastic(
                 page_number, page_size, es_index, model
             )
             await self._put_into_cache(
-                key=f'{es_index}:{page_number}:{page_size}',
+                key=key,
                 data_list=data_list,
                 cache_timout=cache_timout,
             )
@@ -130,12 +132,6 @@ class MixinService:
             key=str(model.id), value=model.json(), expire=cache_timeout
         )
 
-    async def _put_into_cache(
-        self, data_list: list[BaseModel], cache_timout: int, key: str
-    ) -> None:
-        list_json = json.dumps(data_list, default=pydantic_encoder)
-        await self.redis.set(key=key, value=list_json, expire=cache_timout)
-
     async def _get_from_cache(
         self, key: str, model: BaseModel
     ) -> list[BaseModel] | None:
@@ -143,3 +139,9 @@ class MixinService:
         if not data:
             return None
         return parse_raw_as(list[model], data)
+
+    async def _put_into_cache(
+        self, data_list: list[BaseModel], cache_timout: int, key: str
+    ) -> None:
+        list_json = json.dumps(data_list, default=pydantic_encoder)
+        await self.redis.set(key=key, value=list_json, expire=cache_timout)
