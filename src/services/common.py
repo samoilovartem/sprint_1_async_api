@@ -26,7 +26,7 @@ class MixinService:
             data = await self._get_by_id_with_elastic(
                 id=id, model=model, es_index=es_index
             )
-            await self._put_by_id_into_cache(model=data, cache_timeout=cache_timout)
+            await self._put_by_id_into_cache(id=id, model=data, cache_timeout=cache_timout)
         return data
 
     async def _get_by_id_with_elastic(
@@ -123,13 +123,15 @@ class MixinService:
         self, id: UUID, model: BaseModel
     ) -> BaseModel | None:
         data = await self.redis.get(key=str(id))
-        if not data:
+        if not data or data == b'{}':
             return None
         return model.parse_raw(data)
 
-    async def _put_by_id_into_cache(self, model: BaseModel, cache_timeout: int):
+    async def _put_by_id_into_cache(self, id: UUID, model: BaseModel, cache_timeout: int):
         await self.redis.set(
-            key=str(model.id), value=model.json(), expire=cache_timeout
+            key=str(id),
+            value=model.json() if model else '{}',
+            expire=cache_timeout
         )
 
     async def _get_from_cache(
