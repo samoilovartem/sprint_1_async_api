@@ -26,7 +26,7 @@ class MixinService:
         return data
 
     async def _get_by_id_with_elastic(
-            self, id: str, model: BaseModel, es_index: str
+            self, id: UUID, model: BaseModel, es_index: str
     ) -> BaseModel | None:
         try:
             doc = await self.elastic.get(index=es_index, id=id)
@@ -117,7 +117,7 @@ class MixinService:
         return [model(**d['_source']) for d in docs['hits']['hits']]
 
     async def _get_by_id_with_cache(
-            self, id: str, model: BaseModel) -> BaseModel | None:
+            self, id: UUID, model: BaseModel) -> BaseModel | None:
         data = await self.redis.get(id)
         if not data:
             return None
