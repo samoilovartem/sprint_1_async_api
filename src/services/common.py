@@ -26,7 +26,7 @@ class MixinService:
             data = await self._get_by_id_with_elastic(
                 id=id, model=model, es_index=es_index
             )
-            await self._put_by_id_into_cache(model=data, cache_timeout=cache_timout)
+            await self._put_by_id_into_cache(id=id, model=data, cache_timeout=cache_timout)
         return data
 
     async def _get_by_id_with_elastic(
@@ -48,20 +48,21 @@ class MixinService:
         cache_timout: int,
         model: BaseModel,
     ) -> list[BaseModel]:
+        key = f'{es_index}:{search_string}:{search_field}:{page_number}:{page_size}'
         data = await self._get_from_cache(
-            key=f'{es_index}:{search_string}:{search_field}',
+            key=key,
             model=model,
         )
         if not data:
-            data_list = await self._get_by_search_with_elastic(
+            data = await self._get_by_search_with_elastic(
                 search_string, search_field, page_number, page_size, es_index, model
             )
             await self._put_into_cache(
-                key=f'{es_index}:{search_string}:{search_field}',
-                data_list=data_list,
+                key=key,
+                data_list=data,
                 cache_timout=cache_timout,
             )
-            return data_list
+        return data
 
     async def _get_by_search_with_elastic(
         self,
@@ -89,15 +90,16 @@ class MixinService:
         es_index: str,
         model: BaseModel,
     ) -> list[BaseModel] | None:
+        key = f'{es_index}:{page_number}:{page_size}'
         data_list = await self._get_from_cache(
-            key=f'{es_index}:{page_number}:{page_size}', model=model
+            key=key, model=model
         )
         if not data_list:
             data_list = await self._get_list_with_elastic(
                 page_number, page_size, es_index, model
             )
             await self._put_into_cache(
-                key=f'{es_index}:{page_number}:{page_size}',
+                key=key,
                 data_list=data_list,
                 cache_timout=cache_timout,
             )
@@ -121,20 +123,16 @@ class MixinService:
         self, id: UUID, model: BaseModel
     ) -> BaseModel | None:
         data = await self.redis.get(key=str(id))
-        if not data:
+        if not data or data == b'{}':
             return None
         return model.parse_raw(data)
 
-    async def _put_by_id_into_cache(self, model: BaseModel, cache_timeout: int):
+    async def _put_by_id_into_cache(self, id: UUID, model: BaseModel, cache_timeout: int):
         await self.redis.set(
-            key=str(model.id), value=model.json(), expire=cache_timeout
+            key=str(id),
+            value=model.json() if model else '{}',
+            expire=cache_timeout
         )
-
-    async def _put_into_cache(
-        self, data_list: list[BaseModel], cache_timout: int, key: str
-    ) -> None:
-        list_json = json.dumps(data_list, default=pydantic_encoder)
-        await self.redis.set(key=key, value=list_json, expire=cache_timout)
 
     async def _get_from_cache(
         self, key: str, model: BaseModel
@@ -143,3 +141,9 @@ class MixinService:
         if not data:
             return None
         return parse_raw_as(list[model], data)
+
+    async def _put_into_cache(
+        self, data_list: list[BaseModel], cache_timout: int, key: str
+    ) -> None:
+        list_json = json.dumps(data_list, default=pydantic_encoder)
+        await self.redis.set(key=key, value=list_json, expire=cache_timout)

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from models.schemas import PersonDetail
 from services.persons import PersonService, get_service
@@ -16,8 +16,8 @@ router = APIRouter()
     description="Get a list of all persons",
 )
 async def get_persons_list(
-    page_number: int = 0,
-    page_size: int = 20,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=20, gt=0),
     person_service: PersonService = Depends(get_service),
 ) -> list[PersonDetail]:
     persons_list = await person_service.get_list(
@@ -43,8 +43,8 @@ async def get_persons_list(
 )
 async def get_persons_by_search(
     query: str,
-    page_number: int = 0,
-    page_size: int = 20,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=20, gt=0),
     person_service: PersonService = Depends(get_service),
 ) -> list[PersonDetail]:
     persons_list = await person_service.get_by_search(query, page_number, page_size)

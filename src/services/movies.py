@@ -59,9 +59,8 @@ class MovieService(MixinService):
         if genre_id:
             query = query | genre_query
 
-        movies_list = await self._get_from_cache(
-            key=f'{sort_field}:{sort_type}:{genre_id}:{self.es_index}', model=self.model
-        )
+        key = f'{sort_field}:{sort_type}:{genre_id}:{page_number}:{page_size}:{self.es_index}'
+        movies_list = await self._get_from_cache(key=key, model=self.model)
 
         if not movies_list:
             movies_list = await self._get_list_with_elastic(
@@ -72,20 +71,21 @@ class MovieService(MixinService):
                 query=query,
             )
             await self._put_into_cache(
-                key=f'{sort_field}:{sort_type}:{genre_id}:{self.es_index}',
+                key=key,
                 data_list=movies_list,
                 cache_timout=Config.REDIS_CACHE_TIMEOUT,
             )
         return movies_list
 
     async def get_similar(self, movie_id: UUID) -> Optional[list[MovieDetail]]:
+        key = f'similar:{movie_id}:{self.es_index}'
         movies_list = await self._get_from_cache(
-            key=f'similar:{movie_id}:{self.es_index}', model=self.model
+            key=key, model=self.model
         )
         if not movies_list:
             movies_list = await self._get_similar_with_elastic(movie_id)
             await self._put_into_cache(
-                key=f'similar:{movie_id}:{self.es_index}',
+                key=key,
                 data_list=movies_list,
                 cache_timout=Config.REDIS_CACHE_TIMEOUT,
             )
@@ -111,13 +111,14 @@ class MovieService(MixinService):
         return data
 
     async def get_popular_genre(self, genre_id: UUID) -> list[MovieDetail]:
+        key = f'popular_genre:{genre_id}:{self.es_index}'
         movies_list = await self._get_from_cache(
-            key=f'popular_genre:{genre_id}:{self.es_index}', model=self.model
+            key=key, model=self.model
         )
         if not movies_list:
             movies_list = await self._get_popular_genre_with_elastic(genre_id)
             await self._put_into_cache(
-                key=f'popular_genre:{genre_id}:{self.es_index}',
+                key=key,
                 data_list=movies_list,
                 cache_timout=Config.REDIS_CACHE_TIMEOUT,
             )
