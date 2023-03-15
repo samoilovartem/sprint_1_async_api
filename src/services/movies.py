@@ -7,7 +7,7 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from pydantic import BaseModel
 
-from core.config import PROJECT_GLOBAL_PAGE_SIZE, REDIS_CACHE_TIMEOUT
+from core.config import Config
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.schemas import MovieDetail
@@ -23,7 +23,7 @@ class MovieService(MixinService):
             id=movie_id,
             model=self.model,
             es_index=self.es_index,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
         )
 
     async def get_by_search(
@@ -36,7 +36,7 @@ class MovieService(MixinService):
             page_size=page_size,
             es_index=self.es_index,
             model=self.model,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
         )
 
     async def get_sorted(
@@ -74,7 +74,7 @@ class MovieService(MixinService):
             await self._put_into_cache(
                 key=f'{sort_field}:{sort_type}:{genre_id}:{self.es_index}',
                 data_list=movies_list,
-                cache_timout=REDIS_CACHE_TIMEOUT,
+                cache_timout=Config.REDIS_CACHE_TIMEOUT,
             )
         return movies_list
 
@@ -87,7 +87,7 @@ class MovieService(MixinService):
             await self._put_into_cache(
                 key=f'similar:{movie_id}:{self.es_index}',
                 data_list=movies_list,
-                cache_timout=REDIS_CACHE_TIMEOUT,
+                cache_timout=Config.REDIS_CACHE_TIMEOUT,
             )
         return movies_list
 
@@ -104,7 +104,7 @@ class MovieService(MixinService):
                 sort_type='desc',
                 genre_id=genre.id,
                 page_number=0,
-                page_size=PROJECT_GLOBAL_PAGE_SIZE,
+                page_size=Config.PROJECT_GLOBAL_PAGE_SIZE,
             )
             if similar_movies:
                 data.extend(similar_movies)
@@ -119,7 +119,7 @@ class MovieService(MixinService):
             await self._put_into_cache(
                 key=f'popular_genre:{genre_id}:{self.es_index}',
                 data_list=movies_list,
-                cache_timout=REDIS_CACHE_TIMEOUT,
+                cache_timout=Config.REDIS_CACHE_TIMEOUT,
             )
         return movies_list
 
@@ -131,7 +131,7 @@ class MovieService(MixinService):
             sort_type='desc',
             genre_id=genre_id,
             page_number=0,
-            page_size=PROJECT_GLOBAL_PAGE_SIZE,
+            page_size=Config.PROJECT_GLOBAL_PAGE_SIZE,
         )
         return movies_list
 

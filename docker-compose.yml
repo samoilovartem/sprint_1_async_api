@@ -2,7 +2,7 @@ version: '3.8'
 
 x-env-file: &services-env-file
   env_file:
-    - ./.env.dev
+    - ./.env
 
 services:
   db:
@@ -14,7 +14,7 @@ services:
     networks:
       - backend
     ports:
-      - "5432:5432"
+      - ${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}
     restart: always
 
 
@@ -32,7 +32,7 @@ services:
     networks:
       - backend
     ports:
-      - "9200:9200"
+      - ${ES_PORT}:${ES_CONTAINER_PORT}
     restart: always
 
   redis:
@@ -41,7 +41,7 @@ services:
     networks:
       - backend
     ports:
-      - "6379:6379"
+      - ${REDIS_PORT}:${REDIS_CONTAINER_PORT}
 
   etl:
     container_name: movies_etl
@@ -70,7 +70,7 @@ services:
     volumes:
       - ./src:/app
     ports:
-      - "8000:8000"
+      - ${FASTAPI_PORT}:${FASTAPI_CONTAINER_PORT}
     restart: always
 
 volumes:
