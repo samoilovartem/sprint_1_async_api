@@ -80,6 +80,8 @@ services:
         - ./nginx/conf.d:/etc/nginx/conf.d:ro
       depends_on:
         - fastapi
+      networks:
+      - backend
       ports:
         - ${NGINX_PORT}:${NGINX_CONTAINER_PORT}
 
