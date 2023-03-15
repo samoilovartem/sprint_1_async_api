@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from models.schemas import GenreDetail
 from services.genres import GenreService, get_service
@@ -16,8 +16,8 @@ router = APIRouter()
     description="Get a list of all genres with pagination",
 )
 async def get_genres_list(
-    page_number: int = 0,
-    page_size: int = 20,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=20, gt=0),
     genre_service: GenreService = Depends(get_service),
 ) -> list[GenreDetail]:
     genres_list = await genre_service.get_list(

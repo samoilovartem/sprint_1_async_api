@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from models.schemas import MovieDetail, MovieList
 from services.movies import MovieService, get_service
@@ -18,8 +18,8 @@ router = APIRouter()
 async def get_movies_list(
     sort: str = None,
     genre_id: UUID = None,
-    page_number: int = 0,
-    page_size: int = 20,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=20, gt=0),
     movie_service: MovieService = Depends(get_service),
 ):
     if not sort:
@@ -55,8 +55,8 @@ async def get_movies_list(
 )
 async def get_movies_by_search(
     query: str,
-    page_number: int = 0,
-    page_size: int = 20,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=20, gt=0),
     movie_service: MovieService = Depends(get_service),
 ) -> list[MovieList]:
     movies_list = await movie_service.get_by_search(query, page_number, page_size)
