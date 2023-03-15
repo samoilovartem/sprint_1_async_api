@@ -17,7 +17,7 @@ services:
       - "5432:5432"
     restart: always
 
-  
+
   elasticsearch:
     image: elasticsearch:7.17.9
     container_name: movies_es
@@ -34,7 +34,7 @@ services:
     ports:
       - "9200:9200"
     restart: always
-  
+
   redis:
     image: redis:7.0.9
     container_name: movies_redis
@@ -42,7 +42,7 @@ services:
       - backend
     ports:
       - "6379:6379"
-  
+
   etl:
     container_name: movies_etl
     build:
@@ -58,7 +58,7 @@ services:
     <<: *services-env-file
     networks:
       - backend
-  
+
   fastapi:
     container_name: movies_fastapi
     build:

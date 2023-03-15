@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, PostgresDsn, Field
+from pydantic import BaseModel, Field, PostgresDsn
 from pydantic.env_settings import BaseSettings
 
 
