@@ -54,15 +54,15 @@ class MixinService:
             model=model,
         )
         if not data:
-            data_list = await self._get_by_search_with_elastic(
+            data = await self._get_by_search_with_elastic(
                 search_string, search_field, page_number, page_size, es_index, model
             )
             await self._put_into_cache(
                 key=key,
-                data_list=data_list,
+                data_list=data,
                 cache_timout=cache_timout,
             )
-            return data_list
+        return data
 
     async def _get_by_search_with_elastic(
         self,
