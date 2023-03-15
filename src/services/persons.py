@@ -7,7 +7,7 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from pydantic import BaseModel
 
-from core.config import REDIS_CACHE_TIMEOUT
+from core.config import Config
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.schemas import PersonDetail
@@ -23,7 +23,7 @@ class PersonService(MixinService):
             id=person_id,
             model=self.model,
             es_index=self.es_index,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
         )
 
     async def get_list(
@@ -34,7 +34,7 @@ class PersonService(MixinService):
             page_size=page_size,
             es_index=self.es_index,
             model=self.model,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
         )
 
     async def get_by_search(
@@ -47,7 +47,7 @@ class PersonService(MixinService):
             page_size=page_size,
             es_index=self.es_index,
             model=self.model,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
         )
 
 

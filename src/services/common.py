@@ -6,7 +6,7 @@ from elasticsearch import AsyncElasticsearch, NotFoundError
 from pydantic import BaseModel, parse_raw_as
 from pydantic.json import pydantic_encoder
 
-from core.config import REDIS_CACHE_TIMEOUT
+from core.config import Config
 
 
 class MixinService:
@@ -19,7 +19,7 @@ class MixinService:
         id: UUID,
         model: BaseModel,
         es_index: str,
-        cache_timout: int = REDIS_CACHE_TIMEOUT,
+        cache_timout: int = Config.REDIS_CACHE_TIMEOUT,
     ) -> BaseModel | None:
         data = await self._get_by_id_with_cache(id=id, model=model)
         if not data:

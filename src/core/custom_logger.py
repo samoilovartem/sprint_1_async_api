@@ -4,7 +4,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from core.config import LOGLEVEL
+from core.config import Config
 
 
 class InterceptHandler(logging.Handler):
@@ -36,10 +36,10 @@ class CustomLogger:
     @classmethod
     def make_logger(cls):
         logger = cls.customize_logging(
-            filepath='./logs/fastapi.log',
-            level=LOGLEVEL,
-            retention='1 months',
-            rotation='20 days',
+            filepath=Config.LOG_PATH,
+            level=Config.LOG_LEVEL,
+            retention=Config.LOG_RETENTION,
+            rotation=Config.LOG_ROTATION,
             format='<level>{level: <8}</level> <green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
             'request id: {extra[request_id]} - <cyan>{name}</cyan>:<cyan>{function}</cyan> '
             '- <level>{message}</level>',

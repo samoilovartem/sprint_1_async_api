@@ -6,7 +6,7 @@ from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
-from core.config import REDIS_CACHE_TIMEOUT
+from core.config import Config
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.schemas import GenreDetail
@@ -22,7 +22,7 @@ class GenreService(MixinService):
             id=genre_id,
             model=self.model,
             es_index=self.es_index,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
         )
 
     async def get_list(
@@ -31,7 +31,7 @@ class GenreService(MixinService):
         return await self._get_list(
             page_number=page_number,
             page_size=page_size,
-            cache_timout=REDIS_CACHE_TIMEOUT,
+            cache_timout=Config.REDIS_CACHE_TIMEOUT,
             es_index=self.es_index,
             model=self.model,
         )

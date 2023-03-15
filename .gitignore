@@ -110,3 +110,7 @@ __pycache__/
 ### FASTAPI ###
 src/logs/
 src/.idea/
+
+
+### Docker ###
+.env
