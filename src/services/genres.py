@@ -22,7 +22,7 @@ class GenreService(MixinService):
             id=genre_id,
             model=self.model,
             es_index=self.es_index,
-            cache_timout=REDIS_CACHE_TIMEOUT
+            cache_timout=REDIS_CACHE_TIMEOUT,
         )
 
     async def get_list(
@@ -33,13 +33,13 @@ class GenreService(MixinService):
             page_size=page_size,
             cache_timout=REDIS_CACHE_TIMEOUT,
             es_index=self.es_index,
-            model=self.model
+            model=self.model,
         )
 
 
 @lru_cache()
 def get_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> GenreService:
     return GenreService(redis=redis, elastic=elastic)

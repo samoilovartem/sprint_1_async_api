@@ -7,7 +7,7 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from pydantic import BaseModel
 
-from core.config import REDIS_CACHE_TIMEOUT, PROJECT_GLOBAL_PAGE_SIZE
+from core.config import PROJECT_GLOBAL_PAGE_SIZE, REDIS_CACHE_TIMEOUT
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.schemas import MovieDetail
@@ -60,8 +60,7 @@ class MovieService(MixinService):
             query = query | genre_query
 
         movies_list = await self._get_from_cache(
-            key=f'{sort_field}:{sort_type}:{genre_id}:{self.es_index}',
-            model=self.model
+            key=f'{sort_field}:{sort_type}:{genre_id}:{self.es_index}', model=self.model
         )
 
         if not movies_list:
@@ -79,13 +78,12 @@ class MovieService(MixinService):
             )
         return movies_list
 
-    async def get_similar_with_cache(self, movie_id: UUID) -> Optional[list[MovieDetail]]:
+    async def get_similar(self, movie_id: UUID) -> Optional[list[MovieDetail]]:
         movies_list = await self._get_from_cache(
-            key=f'similar:{movie_id}:{self.es_index}',
-            model=self.model
+            key=f'similar:{movie_id}:{self.es_index}', model=self.model
         )
         if not movies_list:
-            movies_list = await self.get_similar_with_elastic(movie_id)
+            movies_list = await self._get_similar_with_elastic(movie_id)
             await self._put_into_cache(
                 key=f'similar:{movie_id}:{self.es_index}',
                 data_list=movies_list,
@@ -93,7 +91,9 @@ class MovieService(MixinService):
             )
         return movies_list
 
-    async def get_similar_with_elastic(self, movie_id: UUID) -> Optional[list[MovieDetail]]:
+    async def _get_similar_with_elastic(
+        self, movie_id: UUID
+    ) -> Optional[list[MovieDetail]]:
         movie = await self.get_by_id(movie_id)
         if not movie or not movie.genres:
             return None
@@ -109,14 +109,13 @@ class MovieService(MixinService):
             if similar_movies:
                 data.extend(similar_movies)
         return data
-    
-    async def get_popular_genre_with_cache(self, genre_id: UUID) -> list[MovieDetail]:
+
+    async def get_popular_genre(self, genre_id: UUID) -> list[MovieDetail]:
         movies_list = await self._get_from_cache(
-            key=f'popular_genre:{genre_id}:{self.es_index}',
-            model=self.model
+            key=f'popular_genre:{genre_id}:{self.es_index}', model=self.model
         )
         if not movies_list:
-            movies_list = await self.get_popular_genre_with_elastic(genre_id)
+            movies_list = await self._get_popular_genre_with_elastic(genre_id)
             await self._put_into_cache(
                 key=f'popular_genre:{genre_id}:{self.es_index}',
                 data_list=movies_list,
@@ -124,7 +123,9 @@ class MovieService(MixinService):
             )
         return movies_list
 
-    async def get_popular_genre_with_elastic(self, genre_id: UUID) -> list[MovieDetail]:
+    async def _get_popular_genre_with_elastic(
+        self, genre_id: UUID
+    ) -> list[MovieDetail]:
         movies_list = await self.get_sorted(
             sort_field='imdb_rating',
             sort_type='desc',
@@ -133,8 +134,7 @@ class MovieService(MixinService):
             page_size=PROJECT_GLOBAL_PAGE_SIZE,
         )
         return movies_list
-    
-    
+
 
 @lru_cache()
 def get_service(

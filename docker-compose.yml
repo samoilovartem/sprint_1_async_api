@@ -5,17 +5,17 @@ x-env-file: &services-env-file
     - ./.env.dev
 
 services:
-#  db:
-#    image: postgres:15.2
-#    container_name: movies_db
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#    <<: *services-env-file
-#    networks:
-#      - backend
-#    ports:
-#      - "5432:5432"
-#    restart: always
+  db:
+    image: postgres:15.2
+    container_name: movies_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    <<: *services-env-file
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+    restart: always
 
 
   elasticsearch:
@@ -43,21 +43,21 @@ services:
     ports:
       - "6379:6379"
 
-#  etl:
-#    container_name: movies_etl
-#    build:
-#      context: ./etl
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - db
-#      - elasticsearch
-#    command: ["./wait-for-it.sh", "db:5432", "--", "./wait-for-it.sh",
-#              "elasticsearch:9200", "--", "python", "main.py"]
-#    volumes:
-#      - ./etl:/app
-#    <<: *services-env-file
-#    networks:
-#      - backend
+  etl:
+    container_name: movies_etl
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - elasticsearch
+    command: ["./wait-for-it.sh", "db:5432", "--", "./wait-for-it.sh",
+              "elasticsearch:9200", "--", "python", "main.py"]
+    volumes:
+      - ./etl:/app
+    <<: *services-env-file
+    networks:
+      - backend
 
   fastapi:
     container_name: movies_fastapi

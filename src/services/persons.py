@@ -23,7 +23,7 @@ class PersonService(MixinService):
             id=person_id,
             model=self.model,
             es_index=self.es_index,
-            cache_timout=REDIS_CACHE_TIMEOUT
+            cache_timout=REDIS_CACHE_TIMEOUT,
         )
 
     async def get_list(
@@ -53,7 +53,7 @@ class PersonService(MixinService):
 
 @lru_cache()
 def get_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> PersonService:
     return PersonService(redis=redis, elastic=elastic)
