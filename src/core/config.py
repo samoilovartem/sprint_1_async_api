@@ -1,12 +1,42 @@
 import os
 from pydantic import BaseSettings, Field
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+PROJECT_DESCRIPTION = 'A powerful API for online cinema platforms, powered by FastAPI, PostgreSQL, and Elasticsearch. ' \
+                      'CinemaHub API provides rich search, filtering, and exploration features for movies, actors, ' \
+                      'directors, writers, and genres, enabling an immersive and interactive experience for users.'
+
+LICENSE_INFO = {
+    'name': 'MIT',
+    'url': 'https://opensource.org/licenses/MIT',
+}
+
+PROJECT_TAGS_METADATA = [
+    {
+        'name': 'Movies',
+        'description': 'Discover **movies** with **search**, **sorting**, **filtering**, and access **detailed '
+                       'information** about each movie.',
+    },
+    {
+        'name': 'Persons',
+        'description': 'Explore **actors**, **writers**, and **directors** in the movie library with **search** '
+                       'and access **detailed information**.',
+    },
+    {
+        'name': 'Genres',
+        'description': 'Browse a **list** of movie genres and access **detailed information** about each genre in the '
+                       'movie library.',
+    },
+]
 
 
 class Config(BaseSettings):
-    PROJECT_NAME: str = Field('movies', env='PROJECT_NAME')
+    PROJECT_NAME: str = Field('CinemaHub API', env='PROJECT_NAME')
+    PROJECT_DESCRIPTION: str = Field(PROJECT_DESCRIPTION, env='PROJECT_DESCRIPTION')
+    PROJECT_VERSION: str = Field('1.0.0', env='PROJECT_VERSION')
+    PROJECT_LICENSE: dict = Field(LICENSE_INFO)
+    PROJECT_OPENAPI_TAGS: list[dict[str, str]] = Field(PROJECT_TAGS_METADATA)
     PROJECT_DOCS_URL: str = Field('/api/openapi', env='PROJECT_DOCS_URL')
     PROJECT_OPENAPI_URL: str = Field('/api/openapi.json', env='PROJECT_OPENAPI_URL')
     PROJECT_GLOBAL_PAGE_SIZE: int = Field(20, env='PROJECT_GLOBAL_PAGE_SIZE')

@@ -48,6 +48,16 @@ class PersonDetail(FastJSONMixin):
     )
 
 
+class PersonShort(FastJSONMixin):
+    """A Pydantic model that represents a short person instance in a movie."""
+
+    full_name: str = Field(
+        title='Full name',
+        max_length=255,
+        example='Mike Epps',
+    )
+
+
 class MovieList(FastJSONMixin):
     """A Pydantic model that represents a list of movies."""
 
@@ -108,17 +118,13 @@ class MovieDetail(MovieList):
     actors: Optional[list[PersonDetail]] = Field(
         title='Actors',
         example=[
-            PersonDetail(
+            PersonShort(
                 id='2834aaa1-d11d-4506-966c-0122ac4da0dc',
                 full_name='Mike Stoklasa',
-                roles=['Director', 'Actor'],
-                movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
             ),
-            PersonDetail(
+            PersonShort(
                 id='7098cdbd-424d-40fa-b7c3-0bf6c81ed283',
                 full_name='Mike Epps',
-                roles=['Actor'],
-                movies_ids=['0e73f787-566f-4b83-816f-7805b32003aa'],
             ),
         ],
         default=[],
@@ -127,17 +133,13 @@ class MovieDetail(MovieList):
     writers: Optional[list[PersonDetail]] = Field(
         title='Writers',
         example=[
-            PersonDetail(
+            PersonShort(
                 id='6960e2ca-889f-41f5-b728-1e7313e54d6c',
                 full_name='Gene Roddenberry',
-                roles=['Writer'],
-                movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
             ),
-            PersonDetail(
+            PersonShort(
                 id='82b7dffe-6254-4598-b6ef-5be747193946',
                 full_name='Alex Kurtzman',
-                roles=['Writer'],
-                movies_ids=['0e73f787-566f-4b83-816f-7805b32003aa'],
             ),
         ],
         default=[],
@@ -145,11 +147,9 @@ class MovieDetail(MovieList):
     directors: Optional[list[PersonDetail]] = Field(
         title='Directors',
         example=[
-            PersonDetail(
+            PersonShort(
                 id='fda827f8-d261-4c23-9e9c-e42787580c4d',
                 full_name='Shaun Robertson',
-                roles=['Director'],
-                movies_ids=['fb58fd7f-7afd-447f-b833-e51e45e2a778'],
             ),
         ],
         default=[],
