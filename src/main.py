@@ -6,7 +6,7 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from api.v1 import genres, movies, persons
+from api import router
 from core.config import Config
 from core.custom_logger import CustomLogger
 from db import elastic, redis
@@ -15,8 +15,12 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title=Config.PROJECT_NAME,
+    description=Config.PROJECT_DESCRIPTION,
+    version=Config.PROJECT_VERSION,
+    license_info=Config.PROJECT_LICENSE,
     docs_url=Config.PROJECT_DOCS_URL,
     openapi_url=Config.PROJECT_OPENAPI_URL,
+    openapi_tags=Config.PROJECT_OPENAPI_TAGS,
     default_response_class=ORJSONResponse,
     logger=CustomLogger.make_logger(),
 )
@@ -34,9 +38,7 @@ async def shutdown():
     await elastic.es.close()
 
 
-app.include_router(movies.router, prefix='/api/v1/movies', tags=['movies'])
-app.include_router(genres.router, prefix='/api/v1/genres', tags=['genres'])
-app.include_router(persons.router, prefix='/api/v1/persons', tags=['persons'])
+app.include_router(router)
 
 
 if __name__ == '__main__':
