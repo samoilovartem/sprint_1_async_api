@@ -14,6 +14,8 @@ services:
     networks:
       - backend
     restart: always
+    ports:
+        - ${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}
 
 
   elasticsearch:
@@ -30,12 +32,16 @@ services:
     networks:
       - backend
     restart: always
+    ports:
+        - ${ES_PORT}:${ES_CONTAINER_PORT}
 
   redis:
     image: redis:7.0.9
     container_name: movies_redis
     networks:
       - backend
+    ports:
+      - ${REDIS_PORT}:${REDIS_CONTAINER_PORT}
 
   etl:
     container_name: movies_etl

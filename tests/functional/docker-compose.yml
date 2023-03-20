@@ -1,17 +1,17 @@
 version: '3.8'
 
-x-env-file: &services-env-file
-  env_file:
-    - ./.env
-
 services:
-  fastapi:
-    build: ../../.
-    image: fastapi-image
-
   tests:
-    image: fastapi-image
-    <<: *services-env-file
+    container_name: movies_tests
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    entrypoint: >
+      sh -c "python3 /tests/functional/utils/wait_for_es.py
+      && python3 /tests/functional/utils/wait_for_redis.py
+      && pytest /tests/functional/src"
+    env_file:
+      - ./.env
     networks:
       - backend
 

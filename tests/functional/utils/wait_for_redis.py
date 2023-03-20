@@ -2,10 +2,10 @@ import time
 
 from redis import Redis, ConnectionError
 
-from settings import Config
+from functional.settings import test_settings
 
 if __name__ == '__main__':
-    redis_client = Redis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+    redis_client = Redis(host=test_settings.REDIS_HOST, port=test_settings.REDIS_PORT)
     while True:
         try:
             if redis_client.ping():

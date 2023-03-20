@@ -98,7 +98,7 @@ fabric.properties
 /etl/.env
 
 ### Virtual environment and temporary requirements ###
-.venv/*
+.venv/
 
 
 ### Personal local stuff ###
