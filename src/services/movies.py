@@ -11,7 +11,6 @@ from data_services.database import ElasticSearch, Database
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.schemas import MovieDetail
-from models.utils_schemas import MovieSortingType
 from services.common import MixinService
 
 
@@ -48,35 +47,17 @@ class MovieService(MixinService):
             sort_type: str,
             genre_id: UUID,
     ) -> list[BaseModel] | None:
-        query = {"sort": {sort_field: sort_type}}
-        genre_query = {
-            "query": {
-                "nested": {
-                    "path": "genres",
-                    "query": {"bool": {"must": [{"match": {"genres.id": genre_id}}]}},
-                }
-            }
-        }
-        if genre_id:
-            query = query | genre_query
+        return await self.get_sorted_list(
+            sort_type=sort_type,
+            sort_field=sort_field,
+            page_number=page_number,
+            page_size=page_size,
+            genre_id=genre_id,
+            es_index=self.es_index,
+            model=self.model,
+            cache_timeout=Config.REDIS_CACHE_TIMEOUT,
+        )
 
-        key = f'{sort_field}:{sort_type}:{genre_id}:{page_number}:{page_size}:{self.es_index}'
-        movies_list = await self.cache.get_list(key=key, model=self.model)
-
-        if not movies_list:
-            movies_list = await self.database.get_list(
-                page_number=page_number,
-                page_size=page_size,
-                es_index=self.es_index,
-                model=self.model,
-                query=query,
-            )
-            await self.cache.put_list(
-                key=key,
-                data_list=movies_list,
-                cache_timeout=Config.REDIS_CACHE_TIMEOUT
-            )
-        return movies_list
 
     # async def get_similar(self, movie_id: UUID) -> Optional[list[MovieDetail]]:
     #     return await super().get_similar(

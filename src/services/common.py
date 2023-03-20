@@ -58,15 +58,46 @@ class MixinService:
             await self.cache.put_list(key=key, data_list=data_list, cache_timeout=cache_timeout)
         return data_list
 
-    # async def get_list_sorted(
-    #         self,
-    #         page_number: int,
-    #         page_size: int,
-    #         cache_timeout: int,
-    #         es_index: str,
-    #         model: BaseModel,
-    #         query: dict,
-    # ) -> list[BaseModel] | None:
+    async def get_sorted_list(
+            self,
+            page_number: int,
+            page_size: int,
+            sort_field: str,
+            sort_type: str,
+            genre_id: UUID,
+            es_index: str,
+            cache_timeout: int,
+            model: BaseModel,
+    ) -> list[BaseModel] | None:
+        query = {"sort": {sort_field: sort_type}}
+        genre_query = {
+            "query": {
+                "nested": {
+                    "path": "genres",
+                    "query": {"bool": {"must": [{"match": {"genres.id": genre_id}}]}},
+                }
+            }
+        }
+        if genre_id:
+            query = query | genre_query
+
+        key = f'{sort_field}:{sort_type}:{genre_id}:{page_number}:{page_size}{es_index}'
+        movies_list = await self.cache.get_list(key=key, model=model)
+
+        if not movies_list:
+            movies_list = await self.database.get_list(
+                page_number=page_number,
+                page_size=page_size,
+                es_index=es_index,
+                model=model,
+                query=query,
+            )
+            await self.cache.put_list(
+                key=key,
+                data_list=movies_list,
+                cache_timeout=cache_timeout
+            )
+        return movies_list
 
 
     # async def get_similar(

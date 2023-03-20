@@ -5,15 +5,17 @@ x-env-file: &services-env-file
     - ./.env
 
 services:
-#  db:
-#    image: postgres:15.2
-#    container_name: movies_db
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#    <<: *services-env-file
-#    networks:
-#      - backend
-#    restart: always
+  db:
+    image: postgres:15.2
+    container_name: movies_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    <<: *services-env-file
+    networks:
+      - backend
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}
 
 
   elasticsearch:
