@@ -22,7 +22,7 @@ async def get_genres_list(
     page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
     genre_service: GenreService = Depends(get_service),
 ) -> list[GenreDetail]:
-    genres_list = await genre_service.get_list(
+    genres_list = await genre_service.get_genres_list(
         page_number=page_number, page_size=page_size
     )
     if not genres_list:
@@ -43,7 +43,7 @@ async def get_genres_list(
 async def get_genre_detail(
     genre_id: UUID, genre_service: GenreService = Depends(get_service)
 ) -> GenreDetail:
-    genre = await genre_service.get_by_id(genre_id)
+    genre = await genre_service.get_genre_by_id(genre_id)
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Genre not found')
     return GenreDetail(id=genre.id, name=genre.name, description=genre.description)
