@@ -5,6 +5,7 @@ from uuid import UUID
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
+from pydantic import BaseModel
 
 from core.config import Config
 from data_services.cache import RedisCache, Cache
@@ -33,6 +34,19 @@ class GenreService(MixinService):
         self, page_number: int, page_size: int
     ) -> Optional[list[GenreDetail]]:
         return await self.get_list(
+            page_number=page_number,
+            page_size=page_size,
+            es_index=self.es_index,
+            model=self.model,
+            cache_timeout=Config.REDIS_CACHE_TIMEOUT,
+        )
+
+    async def get_genres_by_search(
+        self, search_string: str, page_number: int, page_size: int
+    ) -> list[BaseModel]:
+        return await self.get_by_search(
+            search_string=search_string,
+            search_field='name',
             page_number=page_number,
             page_size=page_size,
             es_index=self.es_index,
