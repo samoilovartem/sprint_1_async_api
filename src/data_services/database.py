@@ -20,10 +20,6 @@ class Database(ABC):
             list[BaseModel]:
         pass
 
-    # @abstractmethod
-    # async def search_by_body(self, search_body: dict, es_index: str, model: BaseModel) -> list[BaseModel]:
-    #     pass
-
 
 class ElasticSearch(Database):
     def __init__(self, elastic: AsyncElasticsearch):
@@ -54,7 +50,3 @@ class ElasticSearch(Database):
             body = body | query
         docs = await self.elastic.search(index=es_index, body=body)
         return [model(**d['_source']) for d in docs['hits']['hits']]
-
-    # async def search_by_body(self, search_body: dict, es_index: str, model: BaseModel) -> list[BaseModel]:
-    #     docs = await self.elastic.search(index=es_index, body=search_body)
-    #     return [model(**d['_source']) for d in docs['hits']['hits']]

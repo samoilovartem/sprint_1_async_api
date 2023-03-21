@@ -28,7 +28,12 @@ class MovieService(MixinService):
             cache_timeout=Config.REDIS_CACHE_TIMEOUT,
         )
 
-    async def get_movies_by_search(self, search_string: str, page_number: int, page_size: int) -> list[BaseModel]:
+    async def get_movies_by_search(
+            self,
+            search_string: str,
+            page_number: int,
+            page_size: int
+    ) -> list[BaseModel]:
         return await self.get_by_search(
             search_string=search_string,
             search_field='title',
@@ -68,13 +73,14 @@ class MovieService(MixinService):
             model=self.model,
             cache_timeout=Config.REDIS_CACHE_TIMEOUT,
         )
-    #
-    # async def get_popular_genre(self, genre_id: UUID) -> list[BaseModel]:
-    #     return await super().get_popular_genre(
-    #         genre_id=genre_id,
-    #         es_index=self.es_index,
-    #         model=self.model
-    #     )
+
+    async def get_popular_movies_by_genre(self, genre_id: UUID) -> list[BaseModel]:
+        return await super().get_list_of_popular_movies_by_genre(
+            genre_id=genre_id,
+            es_index=self.es_index,
+            model=self.model,
+            cache_timeout=Config.REDIS_CACHE_TIMEOUT,
+        )
 
 
 @lru_cache()

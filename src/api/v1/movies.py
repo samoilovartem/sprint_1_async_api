@@ -106,24 +106,24 @@ async def get_similar_movies(
         MovieList(id=movie.id, title=movie.title, imdb_rating=movie.imdb_rating)
         for movie in movies_list
     ]
-#
-#
-# @router.get(
-#     path='/genres/{genre_id}',
-#     name='Popular Movies in Genre',
-#     description='Get a list of the most popular movies in a specific genre',
-#     response_model=list[MovieList],
-#     response_model_exclude_unset=True,
-# )
-# async def get_popular_in_genre(
-#         genre_id: UUID, movie_service: MovieService = Depends(get_service)
-# ) -> list[MovieList]:
-#     movies_list = await movie_service.get_popular_genre(genre_id)
-#     if not movies_list:
-#         raise HTTPException(
-#             status_code=HTTPStatus.NOT_FOUND, detail='No movies found in the specified genre'
-#         )
-#     return [
-#         MovieList(id=movie.id, title=movie.title, imdb_rating=movie.imdb_rating)
-#         for movie in movies_list
-#     ]
+
+
+@router.get(
+    path='/genres/{genre_id}',
+    name='Popular Movies in Genre',
+    description='Get a list of the most popular movies in a specific genre',
+    response_model=list[MovieList],
+    response_model_exclude_unset=True,
+)
+async def get_popular_in_genre(
+        genre_id: UUID, movie_service: MovieService = Depends(get_service)
+) -> list[MovieList]:
+    movies_list = await movie_service.get_popular_movies_by_genre(genre_id)
+    if not movies_list:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='No movies found in the specified genre'
+        )
+    return [
+        MovieList(id=movie.id, title=movie.title, imdb_rating=movie.imdb_rating)
+        for movie in movies_list
+    ]

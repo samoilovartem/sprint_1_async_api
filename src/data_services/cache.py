@@ -25,14 +25,6 @@ class Cache(ABC):
     async def put_list(self, key: str, data_list: list[BaseModel], cache_timeout: int) -> None:
         pass
 
-    # @abstractmethod
-    # async def get(self, key: str) -> Any:
-    #     pass
-    #
-    # @abstractmethod
-    # async def set(self, key: str, value: Any, cache_timeout: int) -> None:
-    #     pass
-
 
 class RedisCache(Cache):
     def __init__(self, redis: Redis):
@@ -60,10 +52,3 @@ class RedisCache(Cache):
     async def put_list(self, key: str, data_list: list[BaseModel], cache_timeout: int) -> None:
         list_json = json.dumps(data_list, default=pydantic_encoder)
         await self.redis.set(key=str(key), value=list_json, expire=cache_timeout)
-
-    # async def get(self, key: str) -> Any:
-    #     data = await self.redis.get(key)
-    #     return data
-    #
-    # async def set(self, key: str, value: Any, cache_timeout: int) -> None:
-    #     await self.redis.set(key=str(key), value=value, expire=cache_timeout)
