@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -5,6 +6,7 @@ from pydantic import BaseModel
 from core.config import Config
 from data_services.cache import Cache
 from data_services.database import Database
+from models.schemas import MovieList
 
 
 class MixinService:
@@ -99,42 +101,50 @@ class MixinService:
             )
         return movies_list
 
+    async def get_similar_list(
+            self,
+            movie_id: UUID,
+            es_index: str,
+            model: BaseModel,
+            cache_timeout: int
+    ) -> Optional[list[MovieList]]:
+        key = f'similar:{movie_id}:{es_index}'
+        movies_list = await self.cache.get_list(key=key, model=model)
+        if not movies_list:
+            movies_list = await self._get_similar_list(movie_id, es_index, model, cache_timeout)
+            await self.cache.put_list(
+                key=key,
+                data_list=movies_list,
+                cache_timeout=Config.REDIS_CACHE_TIMEOUT,
+            )
+        return movies_list
 
-    # async def get_similar(
-    #         self,
-    #         movie_id: UUID,
-    #         es_index: str,
-    #         model: BaseModel,
-    #         cache_timeout: int = Config.REDIS_CACHE_TIMEOUT,
-    # ) -> Optional[list[BaseModel]]:
-    #     key = f'similar:{movie_id}:{es_index}'
-    #     movies_list = await self.cache.get(key)
-    #     if not movies_list:
-    #         movie = await self.get_by_id(id=movie_id, model=model, es_index=es_index)
-    #         if not movie:
-    #             return None
-    #
-    #         genres = movie.genres
-    #
-    #         search_body = {
-    #             "query": {
-    #                 "bool": {
-    #                     "filter": [
-    #                         {"terms": {"genres.id": [genre.id for genre in genres]}},
-    #                         {"term": {"_id": str(movie_id)}}
-    #                     ]
-    #                 }
-    #             },
-    #             "size": 10,
-    #         }
-    #
-    #         movies_list = await self.database.search_by_body(
-    #             search_body=search_body, es_index=es_index, model=model
-    #         )
-    #
-    #         await self.cache.set(key, movies_list, cache_timeout)
-    #
-    #     return movies_list
+    async def _get_similar_list(
+            self,
+            movie_id: UUID,
+            es_index: str,
+            model: BaseModel,
+            cache_timeout: int
+    ) -> Optional[list[MovieList]]:
+        movie = await self.get_by_id(movie_id, model, es_index)
+        if not movie or not movie.genres:
+            return None
+        data = []
+        for genre in movie.genres:
+            similar_movies = await self.get_sorted_list(
+                sort_field='imdb_rating',
+                sort_type='desc',
+                genre_id=genre.id,
+                page_number=0,
+                page_size=Config.PROJECT_GLOBAL_PAGE_SIZE,
+                es_index=es_index,
+                model=model,
+                cache_timeout=cache_timeout
+            )
+            if similar_movies:
+                data.extend(similar_movies)
+        return data
+
     #
     # async def get_popular_genre(
     #         self,

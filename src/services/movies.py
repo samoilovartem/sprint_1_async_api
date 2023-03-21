@@ -28,7 +28,7 @@ class MovieService(MixinService):
             cache_timeout=Config.REDIS_CACHE_TIMEOUT,
         )
 
-    async def search_movies(self, search_string: str, page_number: int, page_size: int) -> list[BaseModel]:
+    async def get_movies_by_search(self, search_string: str, page_number: int, page_size: int) -> list[BaseModel]:
         return await self.get_by_search(
             search_string=search_string,
             search_field='title',
@@ -58,13 +58,16 @@ class MovieService(MixinService):
             cache_timeout=Config.REDIS_CACHE_TIMEOUT,
         )
 
-
-    # async def get_similar(self, movie_id: UUID) -> Optional[list[MovieDetail]]:
-    #     return await super().get_similar(
-    #         movie_id=movie_id,
-    #         es_index=self.es_index,
-    #         model=self.model
-    #     )
+    async def get_similar_movies(
+            self,
+            movie_id: UUID,
+    ) -> Optional[list[MovieDetail]]:
+        return await self.get_similar_list(
+            movie_id=movie_id,
+            es_index=self.es_index,
+            model=self.model,
+            cache_timeout=Config.REDIS_CACHE_TIMEOUT,
+        )
     #
     # async def get_popular_genre(self, genre_id: UUID) -> list[BaseModel]:
     #     return await super().get_popular_genre(

@@ -62,7 +62,7 @@ async def get_movies_by_search(
         page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
         movie_service: MovieService = Depends(get_service),
 ) -> list[MovieList]:
-    movies_list = await movie_service.search_movies(query, page_number, page_size)
+    movies_list = await movie_service.get_movies_by_search(query, page_number, page_size)
     if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='No movies found')
     return [
@@ -87,25 +87,25 @@ async def get_movie_details(
     return movie
 
 
-# @router.get(
-#     path='/{movie_id}/similar',
-#     name='Similar Movies',
-#     description='Get a list of movies similar to the specified movie, based on genre',
-#     response_model=list[MovieList],
-#     response_model_exclude_unset=True,
-# )
-# async def get_similar_movies(
-#         movie_id: UUID, movie_service: MovieService = Depends(get_service)
-# ) -> list[MovieList]:
-#     movies_list = await movie_service.get_similar(movie_id)
-#     if not movies_list:
-#         raise HTTPException(
-#             status_code=HTTPStatus.NOT_FOUND, detail='No similar movies found'
-#         )
-#     return [
-#         MovieList(id=movie.id, title=movie.title, imdb_rating=movie.imdb_rating)
-#         for movie in movies_list
-#     ]
+@router.get(
+    path='/{movie_id}/similar',
+    name='Similar Movies',
+    description='Get a list of movies similar to the specified movie, based on genre',
+    response_model=list[MovieList],
+    response_model_exclude_unset=True,
+)
+async def get_similar_movies(
+        movie_id: UUID, movie_service: MovieService = Depends(get_service)
+) -> list[MovieList]:
+    movies_list = await movie_service.get_similar_movies(movie_id)
+    if not movies_list:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='No similar movies found'
+        )
+    return [
+        MovieList(id=movie.id, title=movie.title, imdb_rating=movie.imdb_rating)
+        for movie in movies_list
+    ]
 #
 #
 # @router.get(
