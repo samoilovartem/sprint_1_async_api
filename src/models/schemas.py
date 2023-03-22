@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 from uuid import UUID
 
@@ -7,6 +8,11 @@ from pydantic import BaseModel, Field
 
 def orjson_dumps(v, *, default):
     return dumps(v, default=default).decode()
+
+
+class SortField(str, Enum):
+    imdb_rating = 'imdb_rating'
+    imdb_rating_desc = '-imdb_rating'
 
 
 class FastJSONMixin(BaseModel):
