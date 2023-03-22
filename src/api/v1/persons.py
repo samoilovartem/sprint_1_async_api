@@ -22,6 +22,9 @@ async def get_persons_list(
     page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
     person_service: PersonService = Depends(get_service),
 ) -> list[PersonDetail]:
+
+    """Get a list of all persons involved in the movies, with optional pagination."""
+
     persons_list = await person_service.get_persons_list(
         page_number=page_number, page_size=page_size
     )
@@ -53,6 +56,9 @@ async def get_persons_by_search(
     page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
     person_service: PersonService = Depends(get_service),
 ) -> list[PersonDetail]:
+
+    """Search for persons involved in the movies by their name."""
+
     persons_list = await person_service.get_persons_by_search(query, page_number, page_size)
     if not persons_list:
         raise HTTPException(
@@ -79,6 +85,9 @@ async def get_persons_by_search(
 async def get_person_detail(
     person_id: UUID, person_service: PersonService = Depends(get_service)
 ) -> PersonDetail:
+
+    """Get detailed information about a specific person by their ID."""
+
     person = await person_service.get_person_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Person not found')
