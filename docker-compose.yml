@@ -39,21 +39,21 @@ services:
     networks:
       - backend
 
-#  etl:
-#    container_name: movies_etl
-#    build:
-#      context: ./etl
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - db
-#      - elasticsearch
-#    command: ["./wait-for-it.sh", "db:5432", "--", "./wait-for-it.sh",
-#              "elasticsearch:9200", "--", "python", "main.py"]
-#    volumes:
-#      - ./etl:/app
-#    <<: *services-env-file
-#    networks:
-#      - backend
+  etl:
+    container_name: movies_etl
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - elasticsearch
+    command: ["./wait-for-it.sh", "db:5432", "--", "./wait-for-it.sh",
+              "elasticsearch:9200", "--", "python", "main.py"]
+    volumes:
+      - ./etl:/app
+    <<: *services-env-file
+    networks:
+      - backend
 
   fastapi:
     container_name: movies_fastapi
