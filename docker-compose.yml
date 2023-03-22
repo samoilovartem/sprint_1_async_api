@@ -33,7 +33,7 @@ services:
       - backend
     restart: always
     ports:
-        - ${ES_PORT}:${ES_CONTAINER_PORT}
+      - ${ES_PORT}:${ES_CONTAINER_PORT}
 
   redis:
     image: redis:7.0.9
@@ -79,7 +79,7 @@ services:
       depends_on:
         - fastapi
       networks:
-      - backend
+        - backend
       ports:
         - ${NGINX_PORT}:${NGINX_CONTAINER_PORT}
 

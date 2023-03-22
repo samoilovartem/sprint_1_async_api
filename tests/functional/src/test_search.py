@@ -7,7 +7,7 @@ import pytest
 
 from elasticsearch import AsyncElasticsearch
 
-from functional.settings import test_settings
+from tests.functional.settings import test_settings
 
 
 @pytest.mark.asyncio
@@ -17,7 +17,7 @@ async def test_search():
         'imdb_rating': 8.5,
         'genres':
             {"name": ['Action', 'Sci-Fi']},
-        'title': 'Star Wars',
+        'title': 'The Star',
         'description': 'New World',
         'directors':
             {'full_name': ['Stan']},
@@ -51,14 +51,13 @@ async def test_search():
     response = await es_client.bulk(str_query, refresh=True)
     await es_client.close()
     if response['errors']:
-        print(response)
         raise Exception('Elasticsearch data writing error')
 
     session = aiohttp.ClientSession()
     url = f'http://{test_settings.SERVICE_HOST}:{test_settings.SERVICE_PORT}/api/v1/movies/search'
-    query_data = {'query': 'star wars',
-                  'page_number': 2,
-                  'page_size': 20}
+    query_data = {'query': 'the star',
+                  'page_number': 0,
+                  'page_size': 50}
     async with session.get(url, params=query_data) as response:
         body = await response.json()
         headers = response.headers
@@ -66,4 +65,4 @@ async def test_search():
     await session.close()
 
     assert status == 200
-    assert len(response._body) == 50
+    assert len(body) == 50

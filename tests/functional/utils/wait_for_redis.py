@@ -2,14 +2,17 @@ import time
 
 from redis import Redis, ConnectionError
 
-from functional.settings import test_settings
+from tests.functional.settings import test_settings
 
 if __name__ == '__main__':
-    redis_client = Redis(host=test_settings.REDIS_HOST, port=test_settings.REDIS_PORT)
+    host = test_settings.REDIS_HOST
+    port = test_settings.REDIS_PORT
+    redis_client = Redis(host=host, port=port)
     while True:
         try:
+            print(f'Connecting to Redis at {host}:{port}...')
             if redis_client.ping():
                 break
         except ConnectionError:
-            time.sleep(1)
+            time.sleep(5)
     print('Redis connected')
