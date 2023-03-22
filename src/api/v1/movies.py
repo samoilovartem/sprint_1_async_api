@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from core.config import Config
-from models.schemas import MovieDetail, MovieList
+from models.schemas import MovieDetail, MovieList, SortField
 from services.movies import MovieService, get_service
 
 router = APIRouter(prefix='/movies', tags=['Movies'])
@@ -18,28 +18,25 @@ router = APIRouter(prefix='/movies', tags=['Movies'])
     response_model_exclude_unset=True,
 )
 async def get_movies_list(
-    sort: str = None,
-    genre_id: UUID = None,
-    page_number: int = Query(default=0, ge=0),
-    page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
-    movie_service: MovieService = Depends(get_service),
-):
-    if not sort:
-        sort_field = 'imdb_rating'
-        sort_type = 'desc'
-    else:
-        sort_field = 'imdb_rating' if sort.endswith('imdb_rating') else None
-        if not sort_field:
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND, detail='Invalid sorting field'
-            )
-        sort_type = 'desc' if sort.startswith('-') else 'asc'
-    movies_list = await movie_service.get_sorted(
+        sort: SortField,
+        genre_id: UUID = None,
+        page_number: int = Query(default=0, ge=0),
+        page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
+        movie_service: MovieService = Depends(get_service),
+) -> list[MovieList]:
+
+    """Get a list of all movies with optional filtering by genre and sorting by IMDb rating."""
+
+    sort_field = sort.value
+    sort_type = 'desc' if sort_field.startswith('-') else 'asc'
+    if sort_type == 'desc':
+        sort_field = sort_field[1:]
+    movies_list = await movie_service.get_sorted_movies(
+        page_number=page_number,
+        page_size=page_size,
         sort_field=sort_field,
         sort_type=sort_type,
         genre_id=genre_id,
-        page_number=page_number,
-        page_size=page_size,
     )
     if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='No movies found')
@@ -57,12 +54,15 @@ async def get_movies_list(
     response_model_exclude_unset=True,
 )
 async def get_movies_by_search(
-    query: str,
-    page_number: int = Query(default=0, ge=0),
-    page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
-    movie_service: MovieService = Depends(get_service),
+        query: str,
+        page_number: int = Query(default=0, ge=0),
+        page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
+        movie_service: MovieService = Depends(get_service),
 ) -> list[MovieList]:
-    movies_list = await movie_service.get_by_search(query, page_number, page_size)
+
+    """Search for movies by title and paginate the results."""
+
+    movies_list = await movie_service.get_movies_by_search(query, page_number, page_size)
     if not movies_list:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='No movies found')
     return [
@@ -79,21 +79,15 @@ async def get_movies_by_search(
     response_model_exclude_unset=True,
 )
 async def get_movie_details(
-    movie_id: UUID, movie_service: MovieService = Depends(get_service)
+        movie_id: UUID, movie_service: MovieService = Depends(get_service)
 ) -> MovieDetail:
-    movie = await movie_service.get_by_id(movie_id)
+
+    """Get detailed information about a specific movie by its ID."""
+
+    movie = await movie_service.get_movie_by_id(movie_id)
     if not movie:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Movie not found')
-    return MovieDetail(
-        id=movie.id,
-        imdb_rating=movie.imdb_rating,
-        genres=movie.genres,
-        title=movie.title,
-        description=movie.description,
-        directors=movie.directors,
-        actors=movie.actors,
-        writers=movie.writers,
-    )
+    return movie
 
 
 @router.get(
@@ -104,9 +98,12 @@ async def get_movie_details(
     response_model_exclude_unset=True,
 )
 async def get_similar_movies(
-    movie_id: UUID, movie_service: MovieService = Depends(get_service)
+        movie_id: UUID, movie_service: MovieService = Depends(get_service)
 ) -> list[MovieList]:
-    movies_list = await movie_service.get_similar(movie_id)
+
+    """Get a list of movies similar to the specified movie, based on genre."""
+
+    movies_list = await movie_service.get_similar_movies(movie_id)
     if not movies_list:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='No similar movies found'
@@ -125,9 +122,12 @@ async def get_similar_movies(
     response_model_exclude_unset=True,
 )
 async def get_popular_in_genre(
-    genre_id: UUID, movie_service: MovieService = Depends(get_service)
+        genre_id: UUID, movie_service: MovieService = Depends(get_service)
 ) -> list[MovieList]:
-    movies_list = await movie_service.get_popular_genre(genre_id)
+
+    """Get a list of the most popular movies in a specific genre."""
+
+    movies_list = await movie_service.get_popular_movies_by_genre(genre_id)
     if not movies_list:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='No movies found in the specified genre'

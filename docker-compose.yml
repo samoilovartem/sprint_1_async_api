@@ -15,7 +15,7 @@ services:
       - backend
     restart: always
     ports:
-        - ${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}
 
 
   elasticsearch:
