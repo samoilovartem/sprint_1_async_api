@@ -9,15 +9,16 @@ from tests.functional.utils.schemas import PersonDetail
 
 @pytest.fixture(scope='session')
 async def load_testing_persons_data(es_client):
-    payload = await extract_payload('persons.json', PersonDetail, 'persons')
-    await es_client.bulk(body=payload[0], index='persons', refresh=True)
+    index = 'persons'
+    payload = await extract_payload(f'{index}.json', PersonDetail, index)
+    await es_client.bulk(body=payload[0], index=index, refresh=True)
     yield
-    await es_client.bulk(body=payload[1], index='persons', refresh=True)
+    await es_client.bulk(body=payload[1], index=index, refresh=True)
 
 
 @pytest.mark.asyncio
 async def test_general_persons_list(make_get_request,
-                                    load_testing_person_data,
+                                    load_testing_persons_data,
                                     redis_client):
     response = await make_get_request('persons/')
     persons = await extract_persons(response)
