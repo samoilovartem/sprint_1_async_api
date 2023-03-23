@@ -1,6 +1,6 @@
 import time
 
-from redis import Redis, ConnectionError
+from redis import ConnectionError, Redis
 
 from tests.functional.settings import test_settings
 

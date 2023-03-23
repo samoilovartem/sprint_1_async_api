@@ -1,9 +1,9 @@
+from dataclasses import dataclass
 from typing import Optional
 from uuid import UUID
 
-from dataclasses import dataclass
-from pydantic import BaseModel, Field
 from multidict import CIMultiDictProxy
+from pydantic import BaseModel, Field
 
 
 class IdMixin(BaseModel):

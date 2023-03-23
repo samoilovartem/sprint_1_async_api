@@ -1,8 +1,8 @@
+import asyncio
+
+import aiohttp
 import aioredis
 import pytest
-import asyncio
-import aiohttp
-
 from elasticsearch import AsyncElasticsearch
 
 from tests.functional.settings import test_settings

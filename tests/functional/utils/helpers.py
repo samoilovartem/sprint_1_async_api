@@ -4,7 +4,9 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from tests.functional.settings import BASE_DIR
-from tests.functional.utils.schemas import MovieList, MovieDetail, PersonShort, PersonDetail, HTTPResponse
+from tests.functional.utils.schemas import (HTTPResponse, MovieDetail,
+                                            MovieList, PersonDetail,
+                                            PersonShort)
 
 
 async def extract_movies(response: HTTPResponse) -> list[MovieDetail]:
@@ -16,8 +18,8 @@ async def extract_movie(response: HTTPResponse) -> MovieDetail:
     return MovieDetail.parse_obj(movie)
 
 
-async def extract_persons(response: HTTPResponse) -> list[PersonShort]:
-    return [PersonShort.parse_obj(person) for person in response.body]
+async def extract_persons(response: HTTPResponse) -> list[PersonDetail]:
+    return [PersonDetail.parse_obj(person) for person in response.body]
 
 
 async def extract_person(response: HTTPResponse) -> PersonDetail:

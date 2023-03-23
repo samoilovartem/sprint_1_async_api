@@ -1,8 +1,10 @@
-import pytest
 from http import HTTPStatus
 
+import pytest
+
+from tests.functional.utils.helpers import (extract_movie, extract_movies,
+                                            extract_payload)
 from tests.functional.utils.schemas import MovieDetail
-from tests.functional.utils.helpers import extract_movies, extract_movie, extract_payload
 
 
 @pytest.fixture(scope='session')
