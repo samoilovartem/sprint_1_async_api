@@ -8,7 +8,7 @@ from tests.functional.utils.schemas import MovieList, MovieDetail, PersonShort, 
 
 
 async def extract_movies(response: HTTPResponse) -> list[MovieDetail]:
-    return [MovieList.parse_obj(movies) for movies in response.body]
+    return [MovieDetail.parse_obj(movies) for movies in response.body]
 
 
 async def extract_movie(response: HTTPResponse) -> MovieDetail:
@@ -28,7 +28,7 @@ class UUIDEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, UUID):
             # if the obj is uuid, we simply return the value of uuid
-            return obj.hex
+            return str(obj)
         return json.JSONEncoder.default(self, obj)
 
 
@@ -48,8 +48,8 @@ async def extract_payload(file_name: str,
     add_payload = '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in add_result]) + '\n'
 
     del_result = []
-    #for some_obj in obj_list:
-    #    del_result.append({"delete": {"_index": es_index, "_id": some_obj.id}})
-    #del_payload = '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in del_result]) + '\n'
+    for some_obj in obj_list:
+        del_result.append({"delete": {"_index": es_index, "_id": some_obj.id}})
+    del_payload = '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in del_result]) + '\n'
 
-    return add_payload, #del_payload
+    return add_payload, del_payload

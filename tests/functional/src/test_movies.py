@@ -1,7 +1,7 @@
 import pytest
 from http import HTTPStatus
 
-from tests.functional.utils.schemas import MovieList, MovieDetail
+from tests.functional.utils.schemas import MovieDetail
 from tests.functional.utils.helpers import extract_movies, extract_movie, extract_payload
 
 
@@ -157,11 +157,11 @@ async def test_similar_movies(make_get_request, redis_client):
     assert cache
 
 
-#@pytest.mark.asyncio
-#async def test_es_uploading(make_get_request, redis_client):
-#    response = await make_get_request('movies/2a090dde-f688-46fe-a9f4-b781a9852755')
-#    movie = await extract_movies(response)
-#    cache = await redis_client.get('movies:2a090dde-f688-46fe-a9f4-b781a9852755')
-#    assert movie.id == "2a090dde-f688-46fe-a9f4-b781a9852751"
-#    assert movie.title == "Star Shrek and the mistery of world"
-#    assert cache
+@pytest.mark.asyncio
+async def test_es_uploading(make_get_request, redis_client):
+    response = await make_get_request('movies/2a090dde-f688-46fe-a9f4-b781a9852756')
+    movie = await extract_movie(response)
+    cache = await redis_client.get('2a090dde-f688-46fe-a9f4-b781a9852756')
+    assert str(movie.id) == "2a090dde-f688-46fe-a9f4-b781a9852756"
+    assert movie.title == "Blindeer"
+    assert cache

@@ -108,7 +108,7 @@ class MovieDetail(MovieList):
         ],
         default=[],
     )
-    actors: Optional[list[PersonDetail]] = Field(
+    actors: Optional[list[PersonShort]] = Field(
         title='Actors',
         example=[
             PersonShort(
@@ -123,7 +123,7 @@ class MovieDetail(MovieList):
         default=[],
     )
 
-    writers: Optional[list[PersonDetail]] = Field(
+    writers: Optional[list[PersonShort]] = Field(
         title='Writers',
         example=[
             PersonShort(
@@ -137,7 +137,7 @@ class MovieDetail(MovieList):
         ],
         default=[],
     )
-    directors: Optional[list[PersonDetail]] = Field(
+    directors: Optional[list[PersonShort]] = Field(
         title='Directors',
         example=[
             PersonShort(

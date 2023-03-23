@@ -11,7 +11,7 @@ class TestSettings(BaseSettings):
 
     ES_HOST: str = Field('localhost', env='ES_HOST')
     ES_PORT: int = Field(9200, env='ES_PORT')
-    ES_INDEX: str = Field('localhost', env='ES_INDEX')
+    ES_INDEX: str = Field('movies', env='ES_INDEX')
     ES_ID_FIELD: str = Field('id', env='ES_ID_FIELD')
     ES_INDEX_MAPPING: dict = Field({}, env='ES_INDEX_MAPPING')
 

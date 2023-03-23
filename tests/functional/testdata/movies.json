@@ -1,6 +1,6 @@
 [
   {
-    "id": "2a090dde-f688-46fe-a9f4-b781a9852751",
+    "id": "2a090dde-f688-46fe-a9f4-b781a9852756",
     "imdb_rating": 6.7,
      "genres": [
       {
@@ -19,7 +19,7 @@
         "description": null
       }
     ],
-    "title": "Star Shrek and the mistery of world",
+    "title": "Blindeer",
     "description": "Four thousand years before the fall of the Republic.",
     "directors": [
       {
@@ -40,19 +40,17 @@
     "actors": [
       {
         "id": "00395304-dd52-4c7b-be0d-c2cd7a495684",
-        "full_name": "Jennifer Hale"
-      },
-      {
-        "id": "2802ff93-f147-49cc-a38b-2f787bd2b875",
-        "full_name": "John Cygan"
-      },
-      {
-        "id": "578593ee-3268-4cd4-b910-8a44cfd05b73",
-        "full_name": "Rafael Ferrer"
-      },
-      {
-        "id": "bccbbbb6-be40-44f5-a025-204bcfcf2667",
-        "full_name": "Raphael Sbarge"
+        "full_name": "Jennifer Hale",
+        "roles": [
+          "actor"
+        ],
+        "movies_ids":
+        [
+          "2a090dde-f688-46fe-a9f4-b781a985275e",
+          "32064806-8196-4037-b758-dd5b5d274b59",
+          "4fdffe40-e77f-4fb2-96ad-47319e3ddd2a",
+          "c4d36327-b330-4506-a63d-fef69d3f2f8a"
+        ]
       }
     ],
     "writers": [
@@ -67,32 +65,68 @@
     ]
   },
   {
-    "id": "2a090dde-f688-46fe-a9f4-b781a9852752",
-    "imdb_rating": 7.3,
-    "genres": [
+    "id": "2a090dde-f688-46fe-a9f4-b781a9852757",
+    "imdb_rating": 6.8,
+     "genres": [
       {
-        "id": "6d141ad2-d407-4252-bda4-95590aaf062a",
-        "name": "Documentary",
+        "id": "120a21cf-9097-479e-904a-13dd7198c1dd",
+        "name": "Adventure",
+        "description": null
+      },
+      {
+        "id": "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
+        "name": "Action",
+        "description": null
+      },
+      {
+        "id": "b92ef010-5e4c-4fd0-99d6-41b6456272cd",
+        "name": "Fantasy",
         "description": null
       }
     ],
-    "title": "Counter-Star II",
-    "description": "Counter-Star II is the largest technical leap forward in Counter-Strike's history, ensuring new features and updates for years to come",
-    "directors": [],
+    "title": "Shrek II",
+    "description": "Four thousand years before the fall of the Republic.",
+    "directors": [
+      {
+        "id": "1a9e7e1f-393b-455d-a76f-d3ad2b33673e",
+        "full_name": "Casey Hudson"
+      }
+    ],
     "actors_names": [
-      "Jeffree Star",
-      "Shane Dawson"
+      "Jennifer Hale",
+      "John Cygan",
+      "Rafael Ferrer",
+      "Raphael Sbarge"
+    ],
+    "writers_names": [
+      "Lukas Kristjanson",
+      "Michael Gallo"
     ],
     "actors": [
       {
-        "id": "901595ba-4278-4224-b04c-974c28428a08",
-        "full_name": "Shane Dawson"
-      },
-      {
-        "id": "99a9ef8f-c45d-44b3-ab09-e39685e011f5",
-        "full_name": "Jeffree Star"
+        "id": "00395304-dd52-4c7b-be0d-c2cd7a495684",
+        "full_name": "Jennifer Hale",
+        "roles": [
+          "actor"
+        ],
+        "movies_ids":
+        [
+          "2a090dde-f688-46fe-a9f4-b781a985275e",
+          "32064806-8196-4037-b758-dd5b5d274b59",
+          "4fdffe40-e77f-4fb2-96ad-47319e3ddd2a",
+          "c4d36327-b330-4506-a63d-fef69d3f2f8a"
+        ]
       }
     ],
-    "writers": []
+    "writers": [
+      {
+        "id": "1bc82e3e-d9ea-4da0-a5ea-69ba20b94373",
+        "full_name": "Lukas Kristjanson"
+      },
+      {
+        "id": "1e8d746d-72d2-4da2-ad20-651154cfb158",
+        "full_name": "Michael Gallo"
+      }
+    ]
   }
 ]
