@@ -114,3 +114,4 @@ src/.idea/
 
 ### Docker ###
 .env
+.env.dev
