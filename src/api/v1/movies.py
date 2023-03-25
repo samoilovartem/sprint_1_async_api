@@ -18,11 +18,11 @@ router = APIRouter(prefix='/movies', tags=['Movies'])
     response_model_exclude_unset=True,
 )
 async def get_movies_list(
-        sort: SortField,
-        genre_id: UUID = None,
-        page_number: int = Query(default=0, ge=0),
-        page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
-        movie_service: MovieService = Depends(get_service),
+    sort: SortField,
+    genre_id: UUID = None,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
+    movie_service: MovieService = Depends(get_service),
 ) -> list[MovieList]:
     """
     Get a list of all movies with optional filtering by genre and sorting by IMDb rating.
@@ -50,15 +50,17 @@ async def get_movies_list(
     response_model_exclude_unset=True,
 )
 async def get_movies_by_search(
-        query: str,
-        page_number: int = Query(default=0, ge=0),
-        page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
-        movie_service: MovieService = Depends(get_service),
+    query: str,
+    page_number: int = Query(default=0, ge=0),
+    page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
+    movie_service: MovieService = Depends(get_service),
 ) -> list[MovieList]:
     """
     Search for movies by title and paginate the results.
     """
-    movies_list = await movie_service.get_movies_by_search(query, page_number, page_size)
+    movies_list = await movie_service.get_movies_by_search(
+        query, page_number, page_size
+    )
     raise_exception_if_not_found(movies_list, 'No movies found')
     return to_response_model(movies_list, MovieList)
 
@@ -71,7 +73,7 @@ async def get_movies_by_search(
     response_model_exclude_unset=True,
 )
 async def get_movie_details(
-        movie_id: UUID, movie_service: MovieService = Depends(get_service)
+    movie_id: UUID, movie_service: MovieService = Depends(get_service)
 ) -> MovieDetail:
     """
     Get detailed information about a specific movie by its ID.
@@ -89,7 +91,7 @@ async def get_movie_details(
     response_model_exclude_unset=True,
 )
 async def get_similar_movies(
-        movie_id: UUID, movie_service: MovieService = Depends(get_service)
+    movie_id: UUID, movie_service: MovieService = Depends(get_service)
 ) -> list[MovieList]:
     """
     Get a list of movies similar to the specified movie, based on genre.
@@ -107,7 +109,7 @@ async def get_similar_movies(
     response_model_exclude_unset=True,
 )
 async def get_popular_in_genre(
-        genre_id: UUID, movie_service: MovieService = Depends(get_service)
+    genre_id: UUID, movie_service: MovieService = Depends(get_service)
 ) -> list[MovieList]:
     """
     Get a list of the most popular movies in a specific genre.

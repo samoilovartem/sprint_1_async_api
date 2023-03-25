@@ -1,6 +1,7 @@
 import time
-from loguru import logger
+
 from elasticsearch import Elasticsearch
+from loguru import logger
 
 from tests.functional.settings import test_settings
 from tests.functional.utils.loguru_config import loguru_config
@@ -19,8 +20,11 @@ def connect_to_es(es_client, hosts, sleep_interval=test_settings.SLEEP_INTERVAL)
             es_client.ping()
             break
         except ConnectionError:
-            logger.warning('Connection to Elasticsearch at {} failed. Retrying in {} seconds...',
-                           hosts, sleep_interval)
+            logger.warning(
+                'Connection to Elasticsearch at {} failed. Retrying in {} seconds...',
+                hosts,
+                sleep_interval,
+            )
             time.sleep(sleep_interval)
     logger.success('Elasticsearch connected')
 

@@ -22,6 +22,7 @@ class PersonService(MovieCommonService):
     retrieve persons from the database and cache, such as retrieving persons by id, by search or by list of
     persons.
     """
+
     def __init__(self, cache: Cache, database: Database):
         super().__init__(cache, database)
         self.es_index = 'persons'
@@ -71,8 +72,8 @@ class PersonService(MovieCommonService):
 
 @lru_cache()
 def get_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> PersonService:
     """
     Retrieve a PersonService object with a RedisCache and an ElasticSearch instance as dependencies.

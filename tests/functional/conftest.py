@@ -20,7 +20,8 @@ def event_loop(request):
 @pytest.fixture(scope='session')
 async def redis_client():
     redis = await aioredis.create_redis_pool(
-        (f'{test_settings.REDIS_HOST}', test_settings.REDIS_PORT))
+        (f'{test_settings.REDIS_HOST}', test_settings.REDIS_PORT)
+    )
     await redis.flushall()
     yield redis
     redis.close()
@@ -30,7 +31,8 @@ async def redis_client():
 @pytest.fixture(scope='session')
 async def es_client():
     client = AsyncElasticsearch(
-        hosts=f'{test_settings.ES_HOST}:{test_settings.ES_PORT}')
+        hosts=f'{test_settings.ES_HOST}:{test_settings.ES_PORT}'
+    )
     yield client
     await client.close()
 
@@ -49,7 +51,7 @@ def make_get_request(session):
         url = 'http://{host}:{port}/api/v1/{method}'.format(
             host=test_settings.SERVICE_HOST,
             port=test_settings.SERVICE_PORT,
-            method=method
+            method=method,
         )
         async with session.get(url, params=params) as response:
             return HTTPResponse(

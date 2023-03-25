@@ -37,7 +37,7 @@ async def get_persons_list(
     name='Search Persons',
     description='Search for persons involved in the movies by their name',
     response_model=list[PersonDetail],
-    response_model_exclude_unset=True
+    response_model_exclude_unset=True,
 )
 async def get_persons_by_search(
     query: str,
@@ -48,7 +48,9 @@ async def get_persons_by_search(
     """
     Search for persons involved in the movies by their name.
     """
-    persons_list = await person_service.get_persons_by_search(query, page_number, page_size)
+    persons_list = await person_service.get_persons_by_search(
+        query, page_number, page_size
+    )
     raise_exception_if_not_found(persons_list, 'No persons found')
     return to_response_model(persons_list, PersonDetail)
 

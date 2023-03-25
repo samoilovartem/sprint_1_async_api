@@ -1,11 +1,14 @@
 import os
+
 from pydantic import BaseSettings, Field
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PROJECT_DESCRIPTION = 'A powerful API for online cinema platforms, powered by FastAPI, PostgreSQL, and Elasticsearch. ' \
-                      'CinemaHub API provides rich search, filtering, and exploration features for movies, actors, ' \
-                      'directors, writers, and genres, enabling an immersive and interactive experience for users.'
+PROJECT_DESCRIPTION = (
+    'A powerful API for online cinema platforms, powered by FastAPI, PostgreSQL, and Elasticsearch. '
+    'CinemaHub API provides rich search, filtering, and exploration features for movies, actors, '
+    'directors, writers, and genres, enabling an immersive and interactive experience for users.'
+)
 
 LICENSE_INFO = {
     'name': 'MIT',
@@ -16,17 +19,17 @@ PROJECT_TAGS_METADATA = [
     {
         'name': 'Movies',
         'description': 'Discover **movies** with **search**, **sorting**, **filtering**, and access **detailed '
-                       'information** about each movie.',
+        'information** about each movie.',
     },
     {
         'name': 'Persons',
         'description': 'Explore **actors**, **writers**, and **directors** in the movie library with **search** '
-                       'and access **detailed information**.',
+        'and access **detailed information**.',
     },
     {
         'name': 'Genres',
         'description': 'Browse a **list** of movie genres and access **detailed information** about each genre in the '
-                       'movie library.',
+        'movie library.',
     },
 ]
 

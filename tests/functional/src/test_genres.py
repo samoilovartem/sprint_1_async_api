@@ -2,8 +2,11 @@ from http import HTTPStatus
 
 import pytest
 
-from tests.functional.utils.helpers import (extract_genre, extract_genres,
-                                            extract_payload)
+from tests.functional.utils.helpers import (
+    extract_genre,
+    extract_genres,
+    extract_payload,
+)
 from tests.functional.utils.schemas import GenreDetail
 
 
@@ -17,9 +20,9 @@ async def load_testing_genres_data(es_client):
 
 
 @pytest.mark.asyncio
-async def test_general_genres_list(make_get_request,
-                                   load_testing_genres_data,
-                                   redis_client):
+async def test_general_genres_list(
+    make_get_request, load_testing_genres_data, redis_client
+):
     response = await make_get_request('genres?page_number=0&page_size=20')
     genres = await extract_genres(response)
     cache = await redis_client.get('genres:0:20')
@@ -60,7 +63,9 @@ async def test_genres_search_with_pagination(make_get_request, redis_client):
     response_genres = await make_get_request('genres?page_number=0&page_size=20')
     genres_list = await extract_genres(response_genres)
     genre_name = genres_list[0].name
-    response = await make_get_request(f'genres/search?query={genre_name}&page_number=0&page_size=10')
+    response = await make_get_request(
+        f'genres/search?query={genre_name}&page_number=0&page_size=10'
+    )
     search_genres = await extract_genres(response)
     cache = await redis_client.get(f'genres:{genre_name}:name:0:10')
     assert response.status == HTTPStatus.OK
@@ -86,8 +91,7 @@ async def test_genres_search_no_results(make_get_request, redis_client):
 
 @pytest.mark.asyncio
 async def test_es_genre_uploading(make_get_request, redis_client):
-    response = await make_get_request(
-        'genres/3d8d9bf5-0d90-4353-88ba-4ccc5d2c07f1')
+    response = await make_get_request('genres/3d8d9bf5-0d90-4353-88ba-4ccc5d2c07f1')
     genre = await extract_genre(response)
     cache = await redis_client.get('3d8d9bf5-0d90-4353-88ba-4ccc5d2c07f1')
     assert str(genre.id) == "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07f1"

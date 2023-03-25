@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Callable, TypeVar, Union, Optional
+from typing import Any, Callable, Optional, TypeVar, Union
 
 from fastapi import HTTPException
 
@@ -7,7 +7,9 @@ T = TypeVar('T')
 R = TypeVar('R')
 
 
-def raise_exception_if_not_found(data: Union[list[Any], Optional[Any]], error_detail: str) -> None:
+def raise_exception_if_not_found(
+    data: Union[list[Any], Optional[Any]], error_detail: str
+) -> None:
     """
     Raise an HTTPException if the given data is empty or None.
 

@@ -30,6 +30,3 @@
 8. Показать список персон: http://localhost:8000/api/v1/persons?page_number=0&page_size=20
 9. Поиск по персонам: http://localhost:8000/api/v1/persons/search?query=Steven%20Melching&page_number=0&page_size=20
 10. Данные о персоне: http://localhost:8000/api/v1/persons/84c192fa-7178-4a57-bdd6-a81716e7bb40
-
-
-
