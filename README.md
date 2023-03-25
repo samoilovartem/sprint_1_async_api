@@ -30,3 +30,24 @@
 8. Показать список персон: http://localhost:8000/api/v1/persons?page_number=0&page_size=20
 9. Поиск по персонам: http://localhost:8000/api/v1/persons/search?query=Steven%20Melching&page_number=0&page_size=20
 10. Данные о персоне: http://localhost:8000/api/v1/persons/84c192fa-7178-4a57-bdd6-a81716e7bb40
+
+
+### Тесты
+
+Для запуска тестов необходимо перейти в папку tests/functional/ и запустить docker-compose (предварительно подставив .env-файл, к примеру .env.example).
+При запуске контейнера сперва произойдёт ожидание подключения к elasticsearch и redis, а затем - запуск тестов.
+Если всё хорошо, то в консоли вы увидите примерно следующее:
+
+`Connecting to Elasticsearch at elasticsearch:9200...`
+`Elasticsearch connected`
+`Connecting to Redis at redis:6379...`
+`Redis connected`
+`============================= test session starts ==============================`
+`platform linux -- Python 3.11.2, pytest-7.2.2, pluggy-1.0.0`
+`rootdir: /tests/functional`
+`plugins: asyncio-0.12.0`
+`collected 24 items`
+`src/test_genres.py ....                                                  [ 16%]`
+`src/test_movies.py .............                                         [ 70%]`
+`src/test_persons.py .......                                              [100%]`
+`======================== 24 passed, 4 warnings in 0.40s ========================`
