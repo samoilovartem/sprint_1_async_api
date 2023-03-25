@@ -8,8 +8,8 @@ from fastapi import Depends
 from pydantic import BaseModel
 
 from core.config import Config
-from data_services.cache import RedisCache, Cache
-from data_services.database import ElasticSearch, Database
+from data_services.cache import Cache, RedisCache
+from data_services.database import Database, ElasticSearch
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.schemas import GenreDetail
@@ -29,22 +29,22 @@ class GenreService(MovieCommonService):
         self.model = GenreDetail
 
     async def get_genre_by_id(self, genre_id: UUID) -> Optional[GenreDetail]:
-
-        """Retrieve a genre detail by its unique id from the database and cache."""
-
+        """
+        Retrieve a genre detail by its unique id from the database and cache.
+        """
         return await self.get_by_id(
             id=genre_id,
             model=self.model,
             es_index=self.es_index,
-            cache_timeout=Config.REDIS_CACHE_TIMEOUT
+            cache_timeout=Config.REDIS_CACHE_TIMEOUT,
         )
 
     async def get_genres_by_search(
         self, search_string: str, page_number: int, page_size: int
     ) -> list[BaseModel]:
-
-        """Retrieve a list of genres by search from the database and cache."""
-
+        """
+        Retrieve a list of genres by search from the database and cache.
+        """
         return await self.get_by_search(
             search_string=search_string,
             search_field='name',
@@ -56,11 +56,11 @@ class GenreService(MovieCommonService):
         )
 
     async def get_genres_list(
-            self, page_number: int, page_size: int
+        self, page_number: int, page_size: int
     ) -> Optional[list[GenreDetail]]:
-
-        """Retrieve a list of genres from the database and cache."""
-
+        """
+        Retrieve a list of genres from the database and cache.
+        """
         return await self.get_list(
             page_number=page_number,
             page_size=page_size,
@@ -75,9 +75,9 @@ def get_service(
     redis: Redis = Depends(get_redis),
     elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> GenreService:
-
-    """Retrieve a GenreService object with a RedisCache and an ElasticSearch instance as dependencies."""
-
+    """
+    Retrieve a GenreService object with a RedisCache and an ElasticSearch instance as dependencies.
+    """
     redis_cache = RedisCache(redis)
     async_elastic_search = ElasticSearch(elastic)
     return GenreService(cache=redis_cache, database=async_elastic_search)

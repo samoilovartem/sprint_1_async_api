@@ -70,7 +70,7 @@ services:
     volumes:
       - ./src:/app
     restart: always
-    
+
   nginx:
     container_name: movies_nginx
     image: nginx:1.21

@@ -22,7 +22,9 @@ class Cache(ABC):
         pass
 
     @abstractmethod
-    async def put_list(self, key: str, data_list: list[BaseModel], cache_timeout: int) -> None:
+    async def put_list(
+        self, key: str, data_list: list[BaseModel], cache_timeout: int
+    ) -> None:
         pass
 
 
@@ -38,9 +40,7 @@ class RedisCache(Cache):
 
     async def put_by_id(self, id: UUID, model: BaseModel, cache_timeout: int) -> None:
         await self.redis.set(
-            key=str(id),
-            value=model.json() if model else '{}',
-            expire=cache_timeout
+            key=str(id), value=model.json() if model else '{}', expire=cache_timeout
         )
 
     async def get_list(self, key: str, model: BaseModel) -> list[BaseModel] | None:
@@ -49,6 +49,8 @@ class RedisCache(Cache):
             return None
         return parse_raw_as(list[model], data)
 
-    async def put_list(self, key: str, data_list: list[BaseModel], cache_timeout: int) -> None:
+    async def put_list(
+        self, key: str, data_list: list[BaseModel], cache_timeout: int
+    ) -> None:
         list_json = json.dumps(data_list, default=pydantic_encoder)
         await self.redis.set(key=str(key), value=list_json, expire=cache_timeout)

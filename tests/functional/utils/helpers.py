@@ -4,8 +4,12 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from tests.functional.settings import BASE_DIR
-from tests.functional.utils.schemas import (GenreDetail, HTTPResponse,
-                                            MovieDetail, PersonDetail)
+from tests.functional.utils.schemas import (
+    GenreDetail,
+    HTTPResponse,
+    MovieDetail,
+    PersonDetail,
+)
 
 
 async def extract_movies(response: HTTPResponse) -> list[MovieDetail]:
@@ -41,9 +45,7 @@ class UUIDEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-async def extract_payload(file_name: str,
-                          model: BaseModel,
-                          es_index: str) -> tuple:
+async def extract_payload(file_name: str, model: BaseModel, es_index: str) -> tuple:
     """Extracts payload from json file for use in elastic bulk uploading"""
     file_path = f'{BASE_DIR}/testdata/{file_name}'
     with open(file_path) as json_file:
@@ -51,14 +53,17 @@ async def extract_payload(file_name: str,
     obj_list = [model.parse_obj(some_obj) for some_obj in data]
     add_result = []
     for any_obj in obj_list:
-        add_result.append(
-            {"index": {"_index": es_index, "_id": any_obj.id}})
+        add_result.append({"index": {"_index": es_index, "_id": any_obj.id}})
         add_result.append(any_obj.dict())
-    add_payload = '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in add_result]) + '\n'
+    add_payload = (
+        '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in add_result]) + '\n'
+    )
 
     del_result = []
     for some_obj in obj_list:
         del_result.append({"delete": {"_index": es_index, "_id": some_obj.id}})
-    del_payload = '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in del_result]) + '\n'
+    del_payload = (
+        '\n'.join([json.dumps(line, cls=UUIDEncoder) for line in del_result]) + '\n'
+    )
 
     return add_payload, del_payload
