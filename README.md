@@ -39,15 +39,27 @@
 Если всё хорошо, то в консоли вы увидите примерно следующее:
 
 `Connecting to Elasticsearch at elasticsearch:9200...`
+
 `Elasticsearch connected`
+
 `Connecting to Redis at redis:6379...`
+
 `Redis connected`
+
 `============================= test session starts ==============================`
+
 `platform linux -- Python 3.11.2, pytest-7.2.2, pluggy-1.0.0`
+
 `rootdir: /tests/functional`
+
 `plugins: asyncio-0.12.0`
+
 `collected 24 items`
+
 `src/test_genres.py ....                                                  [ 16%]`
+
 `src/test_movies.py .............                                         [ 70%]`
+
 `src/test_persons.py .......                                              [100%]`
+
 `======================== 24 passed, 4 warnings in 0.40s ========================`
