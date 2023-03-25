@@ -56,6 +56,35 @@ async def test_genres_search(make_get_request, redis_client):
 
 
 @pytest.mark.asyncio
+async def test_genres_search_with_pagination(make_get_request, redis_client):
+    response_genres = await make_get_request('genres?page_number=0&page_size=20')
+    genres_list = await extract_genres(response_genres)
+    genre_name = genres_list[0].name
+    response = await make_get_request(f'genres/search?query={genre_name}&page_number=0&page_size=10')
+    search_genres = await extract_genres(response)
+    cache = await redis_client.get(f'genres:{genre_name}:name:0:10')
+    assert response.status == HTTPStatus.OK
+    assert len(search_genres) > 0
+    assert cache
+
+
+@pytest.mark.asyncio
+async def test_genres_search_no_results(make_get_request, redis_client):
+    non_existent_genre_name = 'NonExistentGenreName1234'
+    response = await make_get_request(f'genres/search?query={non_existent_genre_name}')
+
+    response_body = response.body
+
+    cache = await redis_client.get(f'genres:{non_existent_genre_name}:name:0:20')
+    decoded_cache = cache.decode('UTF-8').lower()
+
+    assert response.status == HTTPStatus.NOT_FOUND
+    assert response_body == {'detail': 'No genres found'}
+    assert cache
+    assert non_existent_genre_name.lower() not in decoded_cache
+
+
+@pytest.mark.asyncio
 async def test_es_genre_uploading(make_get_request, redis_client):
     response = await make_get_request(
         'genres/3d8d9bf5-0d90-4353-88ba-4ccc5d2c07f1')

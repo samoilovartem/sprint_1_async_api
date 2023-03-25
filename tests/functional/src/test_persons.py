@@ -87,6 +87,35 @@ async def test_persons_search(make_get_request, redis_client):
 
 
 @pytest.mark.asyncio
+async def test_persons_search_with_pagination(make_get_request, redis_client):
+    response_persons = await make_get_request('persons/')
+    persons_list = await extract_persons(response_persons)
+    person_name = persons_list[0].full_name
+    response = await make_get_request(f'persons/search?query={person_name}&page_number=0&page_size=10')
+    search_persons = await extract_persons(response)
+    cache = await redis_client.get(f'persons:{person_name}:full_name:0:10')
+    assert response.status == HTTPStatus.OK
+    assert len(search_persons) > 0
+    assert cache
+
+
+@pytest.mark.asyncio
+async def test_persons_search_no_results(make_get_request, redis_client):
+    non_existent_person_name = 'NonExistentPersonName1234'
+    response = await make_get_request(f'persons/search?query={non_existent_person_name}')
+
+    response_body = response.body
+
+    cache = await redis_client.get(f'persons:{non_existent_person_name}:full_name:0:20')
+    decoded_cache = cache.decode('UTF-8').lower()
+
+    assert response.status == HTTPStatus.NOT_FOUND
+    assert response_body == {'detail': 'No persons found'}
+    assert cache
+    assert non_existent_person_name.lower() not in decoded_cache
+
+
+@pytest.mark.asyncio
 async def test_es_person_uploading(make_get_request, redis_client):
     response = await make_get_request(
         'persons/00e1b6fd-cc86-4841-a983-5a3d34e4da98')

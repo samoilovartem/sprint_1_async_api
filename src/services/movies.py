@@ -26,9 +26,9 @@ class MovieService(MovieCommonService):
         self.model = MovieDetail
 
     async def get_movie_by_id(self, movie_id: UUID) -> Optional[MovieDetail]:
-
-        """Retrieve a movie detail by its unique id from the database and cache."""
-
+        """
+        Retrieve a movie detail by its unique id from the database and cache.
+        """
         return await self.get_by_id(
             id=movie_id,
             model=self.model,
@@ -42,9 +42,9 @@ class MovieService(MovieCommonService):
             page_number: int,
             page_size: int
     ) -> list[BaseModel]:
-
-        """Retrieve a list of movies by search from the database and cache."""
-
+        """
+        Retrieve a list of movies by search from the database and cache.
+        """
         return await self.get_by_search(
             search_string=search_string,
             search_field='title',
@@ -63,9 +63,9 @@ class MovieService(MovieCommonService):
             sort_type: str,
             genre_id: UUID,
     ) -> list[BaseModel] | None:
-
-        """Retrieve a list of sorted movies from the database and cache."""
-
+        """
+        Retrieve a list of sorted movies from the database and cache.
+        """
         return await self.get_sorted_list(
             sort_type=sort_type,
             sort_field=sort_field,
@@ -81,9 +81,9 @@ class MovieService(MovieCommonService):
             self,
             movie_id: UUID,
     ) -> Optional[list[MovieDetail]]:
-
-        """Retrieve a list of similar movies from the database and cache."""
-
+        """
+        Retrieve a list of similar movies from the database and cache.
+        """
         return await self.get_similar_list(
             movie_id=movie_id,
             es_index=self.es_index,
@@ -92,9 +92,9 @@ class MovieService(MovieCommonService):
         )
 
     async def get_popular_movies_by_genre(self, genre_id: UUID) -> list[BaseModel]:
-
-        """Retrieve a list of popular movies by genre from the database and cache."""
-
+        """
+        Retrieve a list of popular movies by genre from the database and cache.
+        """
         return await super().get_list_of_popular_movies_by_genre(
             genre_id=genre_id,
             es_index=self.es_index,
@@ -108,9 +108,9 @@ def get_service(
     redis=Depends(get_redis),
     elastic=Depends(get_elastic),
 ) -> MovieService:
-
-    """Retrieve a MovieService object with a RedisCache and an ElasticSearch instance as dependencies."""
-
+    """
+    Retrieve a MovieService object with a RedisCache and an ElasticSearch instance as dependencies.
+    """
     redis_cache = RedisCache(redis)
     async_elastic_search = ElasticSearch(elastic)
     return MovieService(cache=redis_cache, database=async_elastic_search)

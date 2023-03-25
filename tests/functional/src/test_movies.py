@@ -1,3 +1,4 @@
+import json
 from http import HTTPStatus
 
 import pytest
@@ -132,6 +133,35 @@ async def test_movies_search(make_get_request, redis_client):
     assert response.status == HTTPStatus.OK
     assert len(search_movies) > 0
     assert cache
+
+
+@pytest.mark.asyncio
+async def test_movies_search_with_pagination(make_get_request, redis_client):
+    response_movies = await make_get_request('movies?sort=-imdb_rating')
+    movies_list = await extract_movies(response_movies)
+    movie_title = movies_list[0].title
+    response = await make_get_request(f'movies/search?query={movie_title}&page_number=0&page_size=10')
+    search_movies = await extract_movies(response)
+    cache = await redis_client.get(f'movies:{movie_title}:title:0:10')
+    assert response.status == HTTPStatus.OK
+    assert len(search_movies) > 0
+    assert cache
+
+
+@pytest.mark.asyncio
+async def test_movies_search_no_results(make_get_request, redis_client):
+    non_existent_movie_title = 'NonExistentMovieTitle1234'
+    response = await make_get_request(f'movies/search?query={non_existent_movie_title}')
+
+    response_body = response.body
+
+    cache = await redis_client.get(f'movies:{non_existent_movie_title}:title:0:20')
+    decoded_cache = cache.decode('UTF-8').lower()
+
+    assert response.status == HTTPStatus.NOT_FOUND
+    assert response_body == {'detail': 'No movies found'}
+    assert cache
+    assert non_existent_movie_title.lower() not in decoded_cache
 
 
 @pytest.mark.asyncio

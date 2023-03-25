@@ -25,9 +25,9 @@ class MovieCommonService:
             es_index: str,
             cache_timeout: int = Config.REDIS_CACHE_TIMEOUT,
     ) -> BaseModel | None:
-
-        """Retrieve a movie detail by its unique id from the database and cache."""
-
+        """
+        Retrieve a movie detail by its unique id from the database and cache.
+        """
         data = await self.cache.get_by_id(id=id, model=model)
         if not data:
             data = await self.database.get_by_id(id=id, model=model, es_index=es_index)
@@ -44,9 +44,9 @@ class MovieCommonService:
             cache_timeout: int,
             model: BaseModel,
     ) -> list[BaseModel]:
-
-        """Retrieve a list of movies by search from the database and cache."""
-
+        """
+        Retrieve a list of movies by search from the database and cache.
+        """
         key = f'{es_index}:{search_string}:{search_field}:{page_number}:{page_size}'
         data = await self.cache.get_list(key=key, model=model)
         if not data:
@@ -63,9 +63,9 @@ class MovieCommonService:
             es_index: str,
             model: BaseModel,
     ) -> list[BaseModel] | None:
-
-        """Retrieve a list of movies from the database and cache."""
-
+        """
+        Retrieve a list of movies from the database and cache.
+        """
         key = f'{es_index}:{page_number}:{page_size}'
         data_list = await self.cache.get_list(key=key, model=model)
         if not data_list:
@@ -84,9 +84,9 @@ class MovieCommonService:
             cache_timeout: int,
             model: BaseModel,
     ) -> list[BaseModel]:
-
-        """Retrieve a list of movies sorted by a specific field from the database and cache."""
-
+        """
+        Retrieve a list of movies sorted by a specific field from the database and cache.
+        """
         query = {"sort": {sort_field: sort_type}}
         if genre_id:
             query["query"] = {
@@ -109,9 +109,9 @@ class MovieCommonService:
             model: BaseModel,
             cache_timeout: int
     ) -> Optional[list[MovieList]]:
-
-        """Retrieve a list of similar movies by genres from the database and cache."""
-
+        """
+        Retrieve a list of similar movies by genres from the database and cache.
+        """
         key = f'similar:{movie_id}:{es_index}'
         data_list = await self.cache.get_list(key=key, model=model)
         if not data_list:
@@ -126,9 +126,9 @@ class MovieCommonService:
             model: BaseModel,
             cache_timeout: int
     ) -> Optional[list[MovieList]]:
-
-        """Retrieve a list of similar movies by genres from the database."""
-
+        """
+        Retrieve a list of similar movies by genres from the database.
+        """
         movie = await self.get_by_id(movie_id, model, es_index)
         if not movie or not movie.genres:
             return None
@@ -155,9 +155,9 @@ class MovieCommonService:
             model: BaseModel,
             cache_timeout: int
     ) -> list[BaseModel]:
-
-        """Retrieve a list of popular movies by genre from the database and cache."""
-
+        """
+        Retrieve a list of popular movies by genre from the database and cache.
+        """
         key = f'popular_genre:{genre_id}:{es_index}'
         data_list = await self.cache.get_list(key=key, model=model)
         if not data_list:
