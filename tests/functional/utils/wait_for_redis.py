@@ -1,4 +1,4 @@
-from backoff import on_exception, expo
+from backoff import expo, on_exception
 from loguru import logger
 from redis import ConnectionError, Redis
 
