@@ -104,6 +104,24 @@ async def test_persons_search_with_pagination(make_get_request, redis_client):
 
 
 @pytest.mark.asyncio
+async def test_persons_list_negative_page_number(make_get_request):
+    response = await make_get_request('persons?page_number=-1&page_size=20')
+    response_body = response.body.get('detail')[0].get('msg')
+
+    assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY
+    assert response_body == 'ensure this value is greater than or equal to 0'
+
+
+@pytest.mark.asyncio
+async def test_persons_list_negative_page_size(make_get_request):
+    response = await make_get_request('persons?page_number=0&page_size=-20')
+    response_body = response.body.get('detail')[0].get('msg')
+
+    assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY
+    assert response_body == 'ensure this value is greater than 0'
+
+
+@pytest.mark.asyncio
 async def test_persons_search_no_results(make_get_request, redis_client):
     non_existent_person_name = 'NonExistentPersonName1234'
     response = await make_get_request(
