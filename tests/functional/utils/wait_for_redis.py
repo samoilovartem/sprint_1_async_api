@@ -1,5 +1,4 @@
-import time
-
+from backoff import on_exception, expo
 from loguru import logger
 from redis import ConnectionError, Redis
 
@@ -13,22 +12,10 @@ def create_redis_client(host, port):
     return Redis(host=host, port=port)
 
 
-def connect_to_redis(
-    redis_client, host, port, sleep_interval=test_settings.SLEEP_INTERVAL
-):
-    while True:
-        try:
-            logger.info(f'Connecting to Redis at {host}:{port}...')
-            redis_client.ping()
-            break
-        except ConnectionError:
-            logger.warning(
-                'Connection to Redis at {}:{} failed. Retrying in {} seconds...',
-                host,
-                port,
-                sleep_interval,
-            )
-            time.sleep(sleep_interval)
+@on_exception(expo, ConnectionError, max_tries=test_settings.MAX_RETRIES)
+def connect_to_redis(redis_client, host, port):
+    logger.info(f'Connecting to Redis at {host}:{port}...')
+    redis_client.ping()
     logger.success('Redis connected')
 
 
