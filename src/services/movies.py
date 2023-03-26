@@ -2,14 +2,16 @@ from functools import lru_cache
 from typing import Optional
 from uuid import UUID
 
+from aioredis import Redis
+from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from pydantic import BaseModel
 
 from core.config import Config
 from data_services.cache import Cache, RedisCache
 from data_services.database import Database, ElasticSearch
-from db.elastic import get_elastic
-from db.redis import get_redis
+from db.elastic import es_manager
+from db.redis import redis_manager
 from models.schemas import MovieDetail
 from services.common import MovieCommonService
 
@@ -103,8 +105,8 @@ class MovieService(MovieCommonService):
 
 @lru_cache()
 def get_service(
-    redis=Depends(get_redis),
-    elastic=Depends(get_elastic),
+    redis: Redis = Depends(redis_manager.get_redis),
+    elastic: AsyncElasticsearch = Depends(es_manager.get_elastic),
 ) -> MovieService:
     """
     Retrieve a MovieService object with a RedisCache and an ElasticSearch instance as dependencies.

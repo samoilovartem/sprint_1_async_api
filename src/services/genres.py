@@ -10,8 +10,8 @@ from pydantic import BaseModel
 from core.config import Config
 from data_services.cache import Cache, RedisCache
 from data_services.database import Database, ElasticSearch
-from db.elastic import get_elastic
-from db.redis import get_redis
+from db.elastic import es_manager
+from db.redis import redis_manager
 from models.schemas import GenreDetail
 from services.common import MovieCommonService
 
@@ -72,8 +72,8 @@ class GenreService(MovieCommonService):
 
 @lru_cache()
 def get_service(
-    redis: Redis = Depends(get_redis),
-    elastic: AsyncElasticsearch = Depends(get_elastic),
+    redis: Redis = Depends(redis_manager.get_redis),
+    elastic: AsyncElasticsearch = Depends(es_manager.get_elastic),
 ) -> GenreService:
     """
     Retrieve a GenreService object with a RedisCache and an ElasticSearch instance as dependencies.

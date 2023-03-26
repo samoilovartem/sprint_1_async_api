@@ -1,15 +1,15 @@
+import asyncio
 import logging
 
-import aioredis
 import uvicorn
-from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api import router
 from core.config import Config
 from core.custom_logger import CustomLogger
-from db import elastic, redis
+from db.elastic import es_manager
+from db.redis import redis_manager
 
 logger = logging.getLogger(__name__)
 
@@ -28,16 +28,18 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = await aioredis.create_redis_pool(
-        f'redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}'
+    await asyncio.gather(
+        redis_manager.redis_connect(),
+        es_manager.elastic_connect(),
     )
-    elastic.es = AsyncElasticsearch(hosts=[f'{Config.ES_HOST}:{Config.ES_PORT}'])
 
 
 @app.on_event('shutdown')
 async def shutdown():
-    await redis.redis.close()
-    await elastic.es.close()
+    await asyncio.gather(
+        redis_manager.redis_disconnect(),
+        es_manager.elastic_disconnect(),
+    )
 
 
 app.include_router(router)
