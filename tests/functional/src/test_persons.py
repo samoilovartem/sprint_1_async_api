@@ -20,7 +20,9 @@ async def load_testing_persons_data(es_client):
 
 
 @pytest.mark.asyncio
-async def test_general_persons_list(make_get_request, load_testing_persons_data, redis_client):
+async def test_general_persons_list(
+    make_get_request, load_testing_persons_data, redis_client
+):
     response = await make_get_request('persons/')
     persons = await extract_persons(response)
     cache = await redis_client.get('persons:0:20')
