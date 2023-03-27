@@ -18,7 +18,7 @@ router = APIRouter(prefix='/movies', tags=['Movies'])
     response_model_exclude_unset=True,
 )
 async def get_movies_list(
-    sort: SortField,
+    sort: SortField = Query(default=SortField.imdb_rating_desc),
     genre_id: UUID = None,
     page_number: int = Query(default=0, ge=0),
     page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),

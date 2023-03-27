@@ -1,5 +1,4 @@
-import time
-
+from backoff import expo, on_exception
 from elasticsearch import Elasticsearch
 from loguru import logger
 
@@ -13,19 +12,10 @@ def create_es_client(hosts, validate_cert=False, use_ssl=False):
     return Elasticsearch(hosts=hosts, validate_cert=validate_cert, use_ssl=use_ssl)
 
 
-def connect_to_es(es_client, hosts, sleep_interval=test_settings.SLEEP_INTERVAL):
-    while True:
-        try:
-            logger.info('Connecting to Elasticsearch at {}...', hosts)
-            es_client.ping()
-            break
-        except ConnectionError:
-            logger.warning(
-                'Connection to Elasticsearch at {} failed. Retrying in {} seconds...',
-                hosts,
-                sleep_interval,
-            )
-            time.sleep(sleep_interval)
+@on_exception(expo, ConnectionError, max_tries=test_settings.MAX_RETRIES)
+def connect_to_es(es_client, hosts):
+    logger.info('Connecting to Elasticsearch at {}...', hosts)
+    es_client.ping()
     logger.success('Elasticsearch connected')
 
 

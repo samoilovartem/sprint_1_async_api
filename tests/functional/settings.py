@@ -19,7 +19,7 @@ class TestSettings(BaseSettings):
     SERVICE_HOST: str = Field('localhost', env='NGINX_HOST')
     SERVICE_PORT: int = Field(80, env='NGINX_PORT')
 
-    SLEEP_INTERVAL: int = Field(5, env='SLEEP_INTERVAL')
+    MAX_RETRIES: int = Field(5, env='MAX_RETRIES')
 
     class Config:
         env_file = os.path.join(BASE_DIR, '.env')
