@@ -1,25 +1,13 @@
 from http import HTTPStatus
 
-import pytest
-
 from tests.functional.utils.helpers import (
     extract_genre,
-    extract_genres,
-    extract_payload,
+    extract_genres
 )
-from tests.functional.utils.schemas import GenreDetail
+
+pytest_plugins = "tests.functional.fixtures.genres"
 
 
-@pytest.fixture(scope='session')
-async def load_testing_genres_data(es_client):
-    index = 'genres'
-    payload = await extract_payload(f'{index}.json', GenreDetail, index)
-    await es_client.bulk(body=payload[0], index=index, refresh=True)
-    yield
-    await es_client.bulk(body=payload[1], index=index, refresh=True)
-
-
-@pytest.mark.asyncio
 async def test_general_genres_list(
     make_get_request, load_testing_genres_data, redis_client
 ):
@@ -34,7 +22,6 @@ async def test_general_genres_list(
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_genre_search_via_id(make_get_request, redis_client):
     response_genres = await make_get_request('genres/')
     genres_list = await extract_genres(response_genres)
@@ -50,7 +37,6 @@ async def test_genre_search_via_id(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_genres_search(make_get_request, redis_client):
     response_genres = await make_get_request('genres/')
     genres_list = await extract_genres(response_genres)
@@ -65,7 +51,6 @@ async def test_genres_search(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_genres_search_with_pagination(make_get_request, redis_client):
     response_genres = await make_get_request('genres?page_number=0&page_size=20')
     genres_list = await extract_genres(response_genres)
@@ -82,7 +67,6 @@ async def test_genres_search_with_pagination(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_genres_list_negative_page_number(make_get_request):
     endpoint = 'genres?page_number=-1&page_size=20'
 
@@ -93,7 +77,6 @@ async def test_genres_list_negative_page_number(make_get_request):
     assert response_body == 'ensure this value is greater than or equal to 0'
 
 
-@pytest.mark.asyncio
 async def test_genres_list_negative_page_size(make_get_request):
     endpoint = 'genres?page_number=0&page_size=-20'
 
@@ -104,7 +87,6 @@ async def test_genres_list_negative_page_size(make_get_request):
     assert response_body == 'ensure this value is greater than 0'
 
 
-@pytest.mark.asyncio
 async def test_genres_search_no_results(make_get_request, redis_client):
     non_existent_genre_name = 'NonExistentGenreName1234'
     endpoint = f'genres/search?query={non_existent_genre_name}'
@@ -120,7 +102,6 @@ async def test_genres_search_no_results(make_get_request, redis_client):
     assert non_existent_genre_name.lower() not in decoded_cache
 
 
-@pytest.mark.asyncio
 async def test_es_genre_uploading(make_get_request, redis_client):
     genre_id = "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07f1"
 
