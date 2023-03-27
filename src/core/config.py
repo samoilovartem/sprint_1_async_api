@@ -65,6 +65,10 @@ class Config(BaseSettings):
     LOG_RETENTION: str = Field('10 days', env='LOG_RETENTION')
     LOG_ROTATION: str = Field('1 day', env='LOG_ROTATION')
 
+    MAX_RETRIES: int = Field(10, env='MAX_RETRIES')
+    MIN_SIZE: int = Field(10, env='MIN_SIZE')
+    MAX_SIZE: int = Field(20, env='MAX_SIZE')
+
     class Config:
         env_file = os.path.join(BASE_DIR, '..', '.env')
 
