@@ -1,25 +1,13 @@
 from http import HTTPStatus
 
-import pytest
-
 from tests.functional.utils.helpers import (
-    extract_payload,
     extract_person,
     extract_persons,
 )
-from tests.functional.utils.schemas import PersonDetail
+
+pytest_plugins = "tests.functional.fixtures.persons"
 
 
-@pytest.fixture(scope='session')
-async def load_testing_persons_data(es_client):
-    index = 'persons'
-    payload = await extract_payload(f'{index}.json', PersonDetail, index)
-    await es_client.bulk(body=payload[0], index=index, refresh=True)
-    yield
-    await es_client.bulk(body=payload[1], index=index, refresh=True)
-
-
-@pytest.mark.asyncio
 async def test_general_persons_list(
     make_get_request, load_testing_persons_data, redis_client
 ):
@@ -32,7 +20,6 @@ async def test_general_persons_list(
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_person_search_via_id(make_get_request, redis_client):
     response_persons = await make_get_request('persons/')
     persons_list = await extract_persons(response_persons)
@@ -48,7 +35,6 @@ async def test_person_search_via_id(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_persons_list_page_number(make_get_request, redis_client):
     response = await make_get_request('persons?page_number=0')
     persons = await extract_persons(response)
@@ -59,7 +45,6 @@ async def test_persons_list_page_number(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_persons_list_page_size(make_get_request, redis_client):
     response = await make_get_request('persons?page_size=15')
     persons = await extract_persons(response)
@@ -70,7 +55,6 @@ async def test_persons_list_page_size(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_persons_list_page_number_and_size(make_get_request, redis_client):
     response = await make_get_request('persons?page_size=18&page_number=0')
     persons = await extract_persons(response)
@@ -81,7 +65,6 @@ async def test_persons_list_page_number_and_size(make_get_request, redis_client)
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_persons_search(make_get_request, redis_client):
     response_persons = await make_get_request('persons/')
     persons_list = await extract_persons(response_persons)
@@ -96,7 +79,6 @@ async def test_persons_search(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_persons_search_with_pagination(make_get_request, redis_client):
     response_persons = await make_get_request('persons/')
     persons_list = await extract_persons(response_persons)
@@ -113,7 +95,6 @@ async def test_persons_search_with_pagination(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_persons_list_negative_page_number(make_get_request):
     response = await make_get_request('persons?page_number=-1&page_size=20')
     response_body = response.body.get('detail')[0].get('msg')
@@ -122,7 +103,6 @@ async def test_persons_list_negative_page_number(make_get_request):
     assert response_body == 'ensure this value is greater than or equal to 0'
 
 
-@pytest.mark.asyncio
 async def test_persons_list_negative_page_size(make_get_request):
     response = await make_get_request('persons?page_number=0&page_size=-20')
     response_body = response.body.get('detail')[0].get('msg')
@@ -131,7 +111,6 @@ async def test_persons_list_negative_page_size(make_get_request):
     assert response_body == 'ensure this value is greater than 0'
 
 
-@pytest.mark.asyncio
 async def test_persons_search_no_results(make_get_request, redis_client):
     non_existent_person_name = 'NonExistentPersonName1234'
 
@@ -148,7 +127,6 @@ async def test_persons_search_no_results(make_get_request, redis_client):
     assert non_existent_person_name.lower() not in decoded_cache
 
 
-@pytest.mark.asyncio
 async def test_es_person_uploading(make_get_request, redis_client):
     response = await make_get_request('persons/00e1b6fd-cc86-4841-a983-5a3d34e4da98')
     person = await extract_person(response)

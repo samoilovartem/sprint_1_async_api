@@ -1,25 +1,13 @@
 from http import HTTPStatus
 
-import pytest
-
 from tests.functional.utils.helpers import (
     extract_movie,
     extract_movies,
-    extract_payload,
 )
-from tests.functional.utils.schemas import MovieDetail
+
+pytest_plugins = "tests.functional.fixtures.movies"
 
 
-@pytest.fixture(scope='session')
-async def load_testing_movies_data(es_client):
-    index = 'movies'
-    payload = await extract_payload(f'{index}.json', MovieDetail, index)
-    await es_client.bulk(body=payload[0], index=index, refresh=True)
-    yield
-    await es_client.bulk(body=payload[1], index=index, refresh=True)
-
-
-@pytest.mark.asyncio
 async def test_general_movies_list(
     make_get_request, load_testing_movies_data, redis_client
 ):
@@ -32,7 +20,6 @@ async def test_general_movies_list(
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_search_via_id(make_get_request, redis_client):
     response_movies = await make_get_request('movies?sort=-imdb_rating')
     movies_list = await extract_movies(response_movies)
@@ -48,7 +35,6 @@ async def test_movies_search_via_id(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_list_asc_sorting(make_get_request, redis_client):
     response = await make_get_request('movies?sort=imdb_rating')
     movies = await extract_movies(response)
@@ -60,7 +46,6 @@ async def test_movies_list_asc_sorting(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_list_desc_sorting(make_get_request, redis_client):
     response = await make_get_request('movies?sort=-imdb_rating')
     movies = await extract_movies(response)
@@ -72,7 +57,6 @@ async def test_movies_list_desc_sorting(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_list_page_number(make_get_request, redis_client):
     response = await make_get_request('movies?sort=imdb_rating&page_number=0')
     films = await extract_movies(response)
@@ -83,7 +67,6 @@ async def test_movies_list_page_number(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_list_page_size(make_get_request, redis_client):
     response = await make_get_request(
         'movies?sort=-imdb_rating&page_number=0&page_size=10'
@@ -96,7 +79,6 @@ async def test_movies_list_page_size(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_list_page_number_and_size(make_get_request, redis_client):
     response = await make_get_request(
         'movies?sort=-imdb_rating&page_size=18&page_number=0'
@@ -109,7 +91,6 @@ async def test_movies_list_page_number_and_size(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_page_number_and_size_sorted_asc(make_get_request, redis_client):
     response = await make_get_request(
         'movies?sort=imdb_rating&page_size=13&page_number=1'
@@ -123,7 +104,6 @@ async def test_movies_page_number_and_size_sorted_asc(make_get_request, redis_cl
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_page_number_and_size_sorted_desc(make_get_request, redis_client):
     response = await make_get_request(
         'movies?sort=-imdb_rating&page_size=14&page_number=2'
@@ -137,7 +117,6 @@ async def test_movies_page_number_and_size_sorted_desc(make_get_request, redis_c
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_search(make_get_request, redis_client):
     response_movies = await make_get_request('movies?sort=-imdb_rating')
     movies_list = await extract_movies(response_movies)
@@ -152,7 +131,6 @@ async def test_movies_search(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_search_with_pagination(make_get_request, redis_client):
     response_movies = await make_get_request('movies?sort=-imdb_rating')
     movies_list = await extract_movies(response_movies)
@@ -169,7 +147,6 @@ async def test_movies_search_with_pagination(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_movies_list_negative_page_number(make_get_request):
     response = await make_get_request(
         'movies?sort=-imdb_rating&page_number=-1&page_size=20'
@@ -180,7 +157,6 @@ async def test_movies_list_negative_page_number(make_get_request):
     assert response_body == 'ensure this value is greater than or equal to 0'
 
 
-@pytest.mark.asyncio
 async def test_movies_list_negative_page_size(make_get_request):
     response = await make_get_request(
         'movies?sort=-imdb_rating&page_number=0&page_size=-20'
@@ -191,7 +167,6 @@ async def test_movies_list_negative_page_size(make_get_request):
     assert response_body == 'ensure this value is greater than 0'
 
 
-@pytest.mark.asyncio
 async def test_movies_search_no_results(make_get_request, redis_client):
     non_existent_movie_title = 'NonExistentMovieTitle1234'
     response = await make_get_request(f'movies/search?query={non_existent_movie_title}')
@@ -206,7 +181,6 @@ async def test_movies_search_no_results(make_get_request, redis_client):
     assert non_existent_movie_title.lower() not in decoded_cache
 
 
-@pytest.mark.asyncio
 async def test_movies_popular_in_genre(make_get_request, redis_client):
     response = await make_get_request(
         'movies/genres/120a21cf-9097-479e-904a-13dd7198c1dd'
@@ -221,7 +195,6 @@ async def test_movies_popular_in_genre(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_similar_movies(make_get_request, redis_client):
     response_movies = await make_get_request('movies?sort=-imdb_rating')
     movies_list = await extract_movies(response_movies)
@@ -236,7 +209,6 @@ async def test_similar_movies(make_get_request, redis_client):
     assert cache
 
 
-@pytest.mark.asyncio
 async def test_es_uploading(make_get_request, redis_client):
     response = await make_get_request('movies/2a090dde-f688-46fe-a9f4-b781a9852756')
     movie = await extract_movie(response)
