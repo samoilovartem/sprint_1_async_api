@@ -1,4 +1,4 @@
-# Asynchronous API for cinema
+# Asynchronous API for online cinema
 
 ### Project Launch
 
